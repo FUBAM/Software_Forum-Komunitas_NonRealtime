@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('peserta_kegiatan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('kegiatan_id')->constrained('kegiatan')->onDelete('cascade');
+            $table->foreignId('kegiatan_id')->constrained('events')->onDelete('cascade');
             $table->enum('status', ['tertarik', 'kehadiran', 'pemenang'])->default('tertarik');
             $table->text('bukti_url')->nullable();
             $table->text('review_text')->nullable();
