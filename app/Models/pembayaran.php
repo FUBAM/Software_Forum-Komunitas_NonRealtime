@@ -28,7 +28,7 @@ class Payment extends Model
 
     public function event()
     {
-        return $this->belongsTo(Event::class);
+        return $this->belongsTo(Events::class);
     }
 
     // Admin yang melakukan verifikasi
