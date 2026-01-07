@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class events extends Model
 {
+    protected $table = 'events';
     protected $fillable = [
         'kategori_id',
         'komunitas_id',
@@ -44,6 +45,7 @@ class events extends Model
     public function participants()
     {
         return $this->belongsToMany(User::class, 'peserta_kegiatan', 'kegiatan_id', 'user_id')
+            ->using(pesertaKegiatan::class)
             ->withPivot('status', 'bukti_url', 'review_text')
             ->withTimestamps();
     }

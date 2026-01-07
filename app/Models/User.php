@@ -11,6 +11,8 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    protected $table = 'users';
+
     protected $fillable = [
         'nama',
         'email',
@@ -35,11 +37,12 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
-    }
+    }   
 
     public function communities(): BelongsToMany
     {
         return $this->belongsToMany(komunitas::class, 'anggota_komunitas', 'user_id', 'komunitas_id')
+            ->using(anggotaKomunitas::class)
             ->withPivot('role', 'joined_at')
             ->withTimestamps();
     }
@@ -55,6 +58,7 @@ class User extends Authenticatable
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(events::class, 'peserta_kegiatan', 'user_id', 'kegiatan_id')
+            ->using(pesertaKegiatan::class)
             ->withPivot('status', 'bukti_url', 'review_text')
             ->withTimestamps();
     }
@@ -62,6 +66,7 @@ class User extends Authenticatable
     public function badges(): BelongsToMany
     {
         return $this->belongsToMany(badge::class, 'badge_user', 'user_id', 'badge_id')
+            ->using(badgeUser::class)
             ->withPivot('earned_at');
     }
 }

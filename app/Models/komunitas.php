@@ -30,6 +30,7 @@ class komunitas extends Model
     public function members()
     {
         return $this->belongsToMany(User::class, 'anggota_komunitas', 'komunitas_id', 'user_id')
+            ->using(anggotaKomunitas::class)
             ->withPivot('role', 'joined_at');
     }
 
