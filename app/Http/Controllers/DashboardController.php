@@ -12,6 +12,20 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            // Jika Anda sudah punya view admin, ganti 'dashboard' dengan 'admin.dashboard'
+            // return view('admin.dashboard');
+            return view('dashboard'); // Sementara pakai dashboard user dulu
+        }
+
+        // Tampilkan dashboard member
+        return view('dashboard');
+    }
+    
     // Dashboard Utama Admin Pusat
     public function adminIndex()
     {
