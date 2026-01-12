@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\pembayaran;
-use App\Models\events;
-use App\Models\pesertaKegiatan; 
+use App\Models\Pembayaran;
+use App\Models\Events;
+use App\Models\PesertaKegiatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,7 +36,7 @@ class PembayaranController extends Controller
         ]);
 
         return redirect()->route('events.show', $eventId)
-                         ->with('success', 'Bukti terkirim. Menunggu verifikasi admin.');
+            ->with('success', 'Bukti terkirim. Menunggu verifikasi admin.');
     }
 
     // Admin: Verifikasi Pembayaran
@@ -44,7 +44,7 @@ class PembayaranController extends Controller
     {
         // Hanya admin yang boleh akses (cek middleware di route)
         $pembayaran = Pembayaran::findOrFail($id);
-        
+
         if ($request->action == 'approve') {
             $pembayaran->status = 'lunas';
             $pembayaran->diverifikasi_oleh = Auth::id();
@@ -54,20 +54,18 @@ class PembayaranController extends Controller
             PesertaKegiatan::create([
                 'user_id' => $pembayaran->user_id,
                 'events_id' => $pembayaran->events_id,
-                'status' => 'kehadiran', 
+                'status' => 'kehadiran',
                 'bukti_url' => null,
                 'review_text' => null
             ]);
 
             // Tambah XP (Gamifikasi)
             $user = $pembayaran->user;
-            $user->increment('xp_terkini', 10); 
-            $user->increment('trust_score', 5);
+            $user->increment('xp_terkini', 10);
+            $user->increment('skor_kepercayaan', 5);
 
             return back()->with('success', 'Pembayaran diterima.');
-        } 
-        
-        else if ($request->action == 'reject') {
+        } else if ($request->action == 'reject') {
             $pembayaran->status = 'ditolak';
             $pembayaran->alasan_penolakan = $request->alasan;
             $pembayaran->diverifikasi_oleh = Auth::id();

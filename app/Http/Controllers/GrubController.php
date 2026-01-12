@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\grub;
-use App\Models\pesanGrup;
+use App\Models\Grub;
+use App\Models\PesanGrup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,12 +12,14 @@ class GrubController extends Controller
     // Tampilkan Chat Room
     public function chat($grupId)
     {
-        $grup = Grup::with(['komunitas', 'pesan.user'])->findOrFail($grupId);
-        
+        $grup = Grub::with(['komunitas', 'pesan.user'])->findOrFail($grupId);
+
         // Cek akses: User harus anggota komunitas
-        if (!Auth::user()->komunitas->contains($grup->komunitas_id)) {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        if (!$user || !$user->komunitas->contains('id', $grup->komunitas_id)) {
             return redirect()->route('komunitas.show', $grup->komunitas_id)
-                             ->with('error', 'Anda harus bergabung dulu.');
+                ->with('error', 'Anda harus bergabung dulu.');
         }
 
         return view('grup.chat', compact('grup'));
@@ -31,11 +33,13 @@ class GrubController extends Controller
             'lampiran' => 'nullable|image|max:1024'
         ]);
 
-        $grup = Grup::findOrFail($grupId);
+        $grup = Grub::findOrFail($grupId);
 
         if ($grup->is_read_only) {
             // Cek apakah moderator
-            if (!Auth::user()->isModeratorOf($grup->komunitas_id)) {
+            /** @var \App\Models\User|null $user */
+            $user = Auth::user();
+            if (!$user || !$user->isModeratorOf($grup->komunitas_id)) {
                 return back()->with('error', 'Grup ini hanya baca.');
             }
         }

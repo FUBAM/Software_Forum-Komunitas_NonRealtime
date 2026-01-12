@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\events;
-use App\Models\pembayaran;
-use App\Models\komunitas;
-use App\Models\laporan;
+use App\Models\Events;
+use App\Models\Pembayaran;
+use App\Models\Komunitas;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,9 +14,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        if ($user->role === 'admin') {
+        if ($user && $user->role === 'admin') {
             // Jika Anda sudah punya view admin, ganti 'dashboard' dengan 'admin.dashboard'
             // return view('admin.dashboard');
             return view('dashboard'); // Sementara pakai dashboard user dulu
@@ -25,7 +26,7 @@ class DashboardController extends Controller
         // Tampilkan dashboard member
         return view('dashboard');
     }
-    
+
     // Dashboard Utama Admin Pusat
     public function adminIndex()
     {
@@ -39,10 +40,10 @@ class DashboardController extends Controller
 
         // 5 Pembayaran Terbaru yang butuh verifikasi
         $latest_payments = Pembayaran::with(['user', 'event'])
-                            ->where('status', 'pending')
-                            ->latest()
-                            ->take(5)
-                            ->get();
+            ->where('status', 'pending')
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('admin.dashboard', compact('stats', 'latest_payments'));
     }
@@ -50,20 +51,21 @@ class DashboardController extends Controller
     // Dashboard Moderator Komunitas
     public function moderatorIndex($komunitasId)
     {
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        
+
         // Cek validasi akses moderator lokal
-        if (!$user->isModeratorOf($komunitasId)) {
+        if (!$user || !$user->isModeratorOf($komunitasId)) {
             abort(403, 'Akses Ditolak. Anda bukan moderator komunitas ini.');
         }
 
         $komunitas = Komunitas::withCount('anggota')->findOrFail($komunitasId);
-        
+
         // Kegiatan Internal Komunitas Ini
         $kegiatan_internal = Events::where('komunitas_id', $komunitasId)
-                                   ->where('type', 'kegiatan')
-                                   ->latest()
-                                   ->get();
+            ->where('type', 'kegiatan')
+            ->latest()
+            ->get();
 
         return view('moderator.dashboard', compact('komunitas', 'kegiatan_internal'));
     }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class laporan extends Model
+class Laporan extends Model
 {
     protected $table = 'laporan';
 
@@ -18,8 +18,8 @@ class laporan extends Model
     // Karena di migration pakai ENUM, relasi target dilakukan manual di Controller
     public function getTargetAttribute()
     {
-        if ($this->tipe_target === 'kegiatan') return events::find($this->target_id);
-        if ($this->tipe_target === 'pesan') return pesanGrup::find($this->target_id);
+        if ($this->tipe_target === 'kegiatan') return Events::find($this->target_id);
+        if ($this->tipe_target === 'pesan') return PesanGrup::find($this->target_id);
         return null;
     }
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class pemberitahuan extends Model
+class Pemberitahuan extends Model
 {
     protected $table = 'pemberitahuan';
     protected $fillable = ['user_id', 'judul', 'pesan', 'is_read'];

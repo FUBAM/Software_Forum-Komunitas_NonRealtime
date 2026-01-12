@@ -4,36 +4,36 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class Pembayaran extends Model
 {
     protected $table = 'pembayaran';
     protected $fillable = [
         'user_id',
-        'event_id',
-        'amount',
-        'proof_url',
-        'status', // 'pending', 'confirmed', 'rejected'
-        'verified_by',
-        'rejection_reason'
+        'events_id',
+        'jumlah_bayar',
+        'bukti_url',
+        'status', // 'pending', 'lunas', 'ditolak'
+        'diverifikasi_oleh',
+        'alasan_penolakan'
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
+        'jumlah_bayar' => 'decimal:2',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function event()
     {
-        return $this->belongsTo(Events::class);
+        return $this->belongsTo(Events::class, 'events_id');
     }
 
     // Admin yang melakukan verifikasi
     public function verifier()
     {
-        return $this->belongsTo(User::class, 'verified_by');
+        return $this->belongsTo(User::class, 'diverifikasi_oleh');
     }
 }

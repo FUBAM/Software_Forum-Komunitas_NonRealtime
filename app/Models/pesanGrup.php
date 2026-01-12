@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class pesanGrup extends Model
+class PesanGrup extends Model
 {
     protected $table = 'pesan_grup';
 
@@ -16,7 +16,7 @@ class pesanGrup extends Model
 
     public function grub()
     {
-        return $this->belongsTo(grub::class, 'grup_id');
+        return $this->belongsTo(Grub::class, 'grup_id');
     }
 
     public function user()

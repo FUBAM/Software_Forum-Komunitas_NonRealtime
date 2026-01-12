@@ -4,7 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class events extends Model
+/**
+ * @property-read \App\Models\User $pengusul
+ * @property-read \App\Models\Komunitas|null $komunitas
+ * @property-read \App\Models\Kategori $kategori
+ */
+class Events extends Model
 {
     protected $table = 'events';
     protected $fillable = [
@@ -29,12 +34,12 @@ class events extends Model
 
     public function category()
     {
-        return $this->belongsTo(kategori::class, 'kategori_id');
+        return $this->belongsTo(Kategori::class, 'kategori_id');
     }
 
     public function community()
     {
-        return $this->belongsTo(komunitas::class, 'komunitas_id');
+        return $this->belongsTo(Komunitas::class, 'komunitas_id');
     }
 
     public function proposer()
@@ -44,9 +49,25 @@ class events extends Model
 
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'peserta_kegiatan', 'kegiatan_id', 'user_id')
-            ->using(pesertaKegiatan::class)
+        return $this->belongsToMany(User::class, 'peserta_kegiatan', 'events_id', 'user_id')
+            ->using(PesertaKegiatan::class)
             ->withPivot('status', 'bukti_url', 'review_text')
             ->withTimestamps();
+    }
+
+    // Aliases for Indonesian relation names used by controllers/views
+    public function pengusul()
+    {
+        return $this->proposer();
+    }
+
+    public function komunitas()
+    {
+        return $this->community();
+    }
+
+    public function kategori()
+    {
+        return $this->category();
     }
 }

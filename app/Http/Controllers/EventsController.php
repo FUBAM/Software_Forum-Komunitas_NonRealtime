@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\events;
-use App\Models\kategori;
+use App\Models\Events;
+use App\Models\Kategori;
 use App\Models\Komunitas;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -15,13 +16,35 @@ class EventsController extends Controller
     public function index()
     {
         $lomba = Events::where('type', 'lomba')
-                       ->where('status', '!=', 'finished')
-                       ->orderBy('start_date', 'asc')
-                       ->get();
+            ->where('status', '!=', 'finished')
+            ->orderBy('start_date', 'asc')
+            ->get();
 
         return view('events.index', compact('lomba'));
     }
 
+    // Klaim XP (mis: route events.klaim)
+    public function klaimXP($id)
+    {
+        $event = Events::findOrFail($id);
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        if (!$user) return redirect()->route('login');
+
+        // Jika user belum join atau belum mengikuti event, abort
+        $isParticipant = \App\Models\PesertaKegiatan::where('user_id', $user->id)
+            ->where('events_id', $event->id)
+            ->exists();
+
+        if (!$isParticipant) {
+            return back()->with('error', 'Anda bukan peserta kegiatan ini.');
+        }
+
+        // Tambah XP dan tandai klaim (nyederhana)
+        $user->increment('xp_terkini', 5);
+
+        return back()->with('success', 'XP berhasil diklaim.');
+    }
     public function show($id)
     {
         $event = Events::with(['pengusul', 'komunitas', 'kategori'])->findOrFail($id);
@@ -32,12 +55,13 @@ class EventsController extends Controller
     public function create()
     {
         $kategori = Kategori::all();
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
-        
+
         // Load komunitas dimana user menjadi moderator
         $komunitas_moderated = $user->komunitas()
-                                    ->wherePivot('role', 'moderator')
-                                    ->get();
+            ->wherePivot('role', 'moderator')
+            ->get();
 
         return view('events.create', compact('kategori', 'komunitas_moderated'));
     }
@@ -58,7 +82,7 @@ class EventsController extends Controller
         $event->kategori_id = $request->kategori_id;
         $event->diusulkan_oleh = Auth::id();
         $event->start_date = $request->start_date;
-        
+
         // Harga tiket
         $event->harga = $request->harga ?? 0;
         $event->berbayar = ($request->harga > 0);

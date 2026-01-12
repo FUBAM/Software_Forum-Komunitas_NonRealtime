@@ -6,7 +6,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\AnggotaKomunitas;
+use App\Models\Badge;
+use App\Models\BadgeUser;
 
+/**
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany komunitas()
+ */
 class User extends Authenticatable
 {
     use Notifiable;
@@ -37,12 +43,12 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
-    }   
+    }
 
     public function communities(): BelongsToMany
     {
-        return $this->belongsToMany(komunitas::class, 'anggota_komunitas', 'user_id', 'komunitas_id')
-            ->using(anggotaKomunitas::class)
+        return $this->belongsToMany(Komunitas::class, 'anggota_komunitas', 'user_id', 'komunitas_id')
+            ->using('App\\Models\\AnggotaKomunitas')
             ->withPivot('role', 'joined_at')
             ->withTimestamps();
     }
@@ -57,16 +63,22 @@ class User extends Authenticatable
 
     public function events(): BelongsToMany
     {
-        return $this->belongsToMany(events::class, 'peserta_kegiatan', 'user_id', 'kegiatan_id')
-            ->using(pesertaKegiatan::class)
+        return $this->belongsToMany(Events::class, 'peserta_kegiatan', 'user_id', 'events_id')
+            ->using(PesertaKegiatan::class)
             ->withPivot('status', 'bukti_url', 'review_text')
             ->withTimestamps();
     }
 
     public function badges(): BelongsToMany
     {
-        return $this->belongsToMany(badge::class, 'badge_user', 'user_id', 'badge_id')
-            ->using(badgeUser::class)
+        return $this->belongsToMany('App\\Models\\Badge', 'badge_user', 'user_id', 'badge_id')
+            ->using('App\\Models\\BadgeUser')
             ->withPivot('earned_at');
+    }
+
+    // Alias untuk nama relasi Bahasa Indonesia
+    public function komunitas(): BelongsToMany
+    {
+        return $this->communities();
     }
 }

@@ -1,108 +1,69 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>ZHIB</title>
-  <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
-</head>
-<body>
+@extends('layouts.app')
 
-<header class="navbar">
-  <div class="navbar-container">
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+@endsection
 
-    <nav class="nav-left">
-      <a href="#" data-auth>Home</a>
-
-      <div class="nav-dropdown">
-        <button class="nav-link" type="button">
-          Komunitas <span class="arrow">▾</span>
-        </button>
-        <div class="dropdown-menu">
-          <a href="#" data-auth>Komunitas Saya</a>
-          <a href="#" data-auth>Cari Komunitas</a>
-        </div>
-      </div>
-
-      <div class="nav-dropdown">
-        <button class="nav-link" type="button">
-          Event <span class="arrow">▾</span>
-        </button>
-        <div class="dropdown-menu">
-          <a href="#" data-auth>Cari Event</a>
-          <a href="#" data-auth>Riwayat Event</a>
-        </div>
-      </div>
-    </nav>
-
-    <div class="logo">ZHIB</div>
-
-    <div class="nav-right">
-      <a href="#" onclick="openLogin()">Masuk</a>
-      <span>|</span>
-      <a href="#" onclick="openRegister()">Daftar</a>
-    </div>
-
-  </div>
-</header>
+@section('content')
 
 <section class="hero">
-  <img src="{{ asset('image/img (8).jpg') }}" alt="">
-  <div class="hero-overlay">
-    <h1>Temukan Teman Satu Frekuensi</h1>
-    <p>Ribuan komunitas dan event seru menantimu.</p>
-  </div>
+    <img src="{{ asset('image/img (8).jpg') }}" alt="">
+    <div class="hero-overlay">
+        <h1>Temukan Teman Satu Frekuensi</h1>
+        <p>Ribuan komunitas dan event seru menantimu.</p>
+    </div>
 </section>
 
 <section class="section">
-  <div class="section-container">
-    <h2 class="section-title">REKOMENDASI BERITA</h2>
+    <div class="section-container">
+        <h2 class="section-title">REKOMENDASI BERITA</h2>
 
-    <div class="grid-3">
+        <div class="grid-3">
 
-      <a href="#" class="news-card" onclick="openLogin(); return false;">
-        <div class="news-image-frame">
-            <img src="{{ asset('image/img (9).jpg') }}">
+            <a href="#" class="news-card" onclick="openLogin(); return false;">
+                <div class="news-image-frame">
+                    <img src="{{ asset('image/img (9).jpg') }}">
+                </div>
+                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
+            </a>
+
+            <a href="#" class="news-card" onclick="openLogin(); return false;">
+                <div class="news-image-frame">
+                    <img src="{{ asset('image/img (1).jpg') }}">
+                </div>
+                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
+            </a>
+
+            <a href="#" class="news-card" onclick="openLogin(); return false;">
+                <div class="news-image-frame">
+                    <img src="{{ asset('image/img (10).jpg') }}">
+                </div>
+                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
+            </a>
+
+            <a href="#" class="news-card" onclick="openLogin(); return false;">
+                <div class="news-image-frame">
+                    <img src="{{ asset('image/img (9).jpg') }}">
+                </div>
+                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
+            </a>
+
+            <a href="#" class="news-card" onclick="openLogin(); return false;">
+                <div class="news-image-frame">
+                    <img src="{{ asset('image/img (5).jpg') }}">
+                </div>
+                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
+            </a>
+
+            <a href="#" class="news-card" onclick="openLogin(); return false;">
+                <div class="news-image-frame">
+                    <img src="{{ asset('image/img (10).jpg') }}">
+                </div>
+                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
+            </a>
+
         </div>
-        <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-      </a>
-
-      <a href="#" class="news-card" onclick="openLogin(); return false;">
-        <div class="news-image-frame">
-            <img src="{{ asset('image/img (1).jpg') }}">
-        </div>
-        <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-      </a>
-
-      <a href="#" class="news-card" onclick="openLogin(); return false;">
-        <div class="news-image-frame">
-            <img src="{{ asset('image/img (10).jpg') }}">
-        </div>
-        <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-      </a>
-
-      <a href="#" class="news-card" onclick="openLogin(); return false;">
-        <div class="news-image-frame">
-            <img src="{{ asset('image/img (9).jpg') }}">
-        </div>
-        <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-      </a>
-
-      <a href="#" class="news-card" onclick="openLogin(); return false;">
-        <div class="news-image-frame">
-            <img src="{{ asset('image/img (5).jpg') }}">
-        </div>
-        <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-      </a>
-
-      <a href="#" class="news-card" onclick="openLogin(); return false;">
-        <div class="news-image-frame">
-            <img src="{{ asset('image/img (10).jpg') }}">
-        </div>
-        <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-      </a>
-
     </div>
-  </div>
 </section>
 
 <section class="communities" id="event">
@@ -117,417 +78,382 @@
 
         <div class="scroll-wrapper" id="event-list">
 
-        <div class="community-card">
-  <div class="event-image">
-    <img src="{{ asset('image/img (1).jpg') }}" alt="Poster Event">
-  </div>
-  <div class="card-content">
-    <h3>Turnamen futsal Open Sumatera total hadiah jutaan rupiah.</h3>
-    <a href="#" class="card-link">Lihat Detail ></a>
-  </div>
-</div>
+            <div class="community-card">
+                <div class="event-image">
+                    <img src="{{ asset('image/img (1).jpg') }}" alt="Poster Event">
+                </div>
+                <div class="card-content">
+                    <h3>Turnamen futsal Open Sumatera total hadiah jutaan rupiah.</h3>
+                    <a href="#" class="card-link">Lihat Detail ></a>
+                </div>
+            </div>
 
-<div class="community-card">
-  <div class="event-image">
-    <img src="{{ asset('image/img (2).jpg') }}" alt="Poster Event">
-  </div>
-  <div class="card-content">
-    <h3>Kompetisi Mobile Legends offline.</h3>
-    <a href="#" class="card-link">Lihat Detail ></a>
-  </div>
-</div>
+            <div class="community-card">
+                <div class="event-image">
+                    <img src="{{ asset('image/img (2).jpg') }}" alt="Poster Event">
+                </div>
+                <div class="card-content">
+                    <h3>Kompetisi Mobile Legends offline.</h3>
+                    <a href="#" class="card-link">Lihat Detail ></a>
+                </div>
+            </div>
 
-<div class="community-card">
-  <div class="event-image">
-    <img src="{{ asset('image/img (3).jpg') }}" alt="Poster Event">
-  </div>
-  <div class="card-content">
-    <h3>Marathon Jakarta–Bandung 2025.</h3>
-    <a href="#" class="card-link">Lihat Detail ></a>
-  </div>
-</div>
+            <div class="community-card">
+                <div class="event-image">
+                    <img src="{{ asset('image/img (3).jpg') }}" alt="Poster Event">
+                </div>
+                <div class="card-content">
+                    <h3>Marathon Jakarta–Bandung 2025.</h3>
+                    <a href="#" class="card-link">Lihat Detail ></a>
+                </div>
+            </div>
 
-<div class="community-card">
-  <div class="event-image">
-    <img src="{{ asset('image/img (4).jpg') }}" alt="Poster Event">
-  </div>
-  <div class="card-content">
-    <h3>Workshop fotografi untuk pemula.</h3>
-    <a href="#" class="card-link">Lihat Detail ></a>
-  </div>
-</div>
+            <div class="community-card">
+                <div class="event-image">
+                    <img src="{{ asset('image/img (4).jpg') }}" alt="Poster Event">
+                </div>
+                <div class="card-content">
+                    <h3>Workshop fotografi untuk pemula.</h3>
+                    <a href="#" class="card-link">Lihat Detail ></a>
+                </div>
+            </div>
 
-<div class="community-card">
-  <div class="event-image">
-    <img src="{{ asset('image/img (1).jpg') }}" alt="Poster Event">
-  </div>
-  <div class="card-content">
-    <h3>Turnamen futsal Open Sumatera total hadiah jutaan rupiah.</h3>
-    <a href="#" class="card-link">Lihat Detail ></a>
-  </div>
-</div>
+            <div class="community-card">
+                <div class="event-image">
+                    <img src="{{ asset('image/img (1).jpg') }}" alt="Poster Event">
+                </div>
+                <div class="card-content">
+                    <h3>Turnamen futsal Open Sumatera total hadiah jutaan rupiah.</h3>
+                    <a href="#" class="card-link">Lihat Detail ></a>
+                </div>
+            </div>
 
-<div class="community-card">
-  <div class="event-image">
-    <img src="{{ asset('image/img (2).jpg') }}" alt="Poster Event">
-  </div>
-  <div class="card-content">
-    <h3>Kompetisi Mobile Legends offline.</h3>
-    <a href="#" class="card-link">Lihat Detail ></a>
-  </div>
-</div>
+            <div class="community-card">
+                <div class="event-image">
+                    <img src="{{ asset('image/img (2).jpg') }}" alt="Poster Event">
+                </div>
+                <div class="card-content">
+                    <h3>Kompetisi Mobile Legends offline.</h3>
+                    <a href="#" class="card-link">Lihat Detail ></a>
+                </div>
+            </div>
 
-<div class="community-card">
-  <div class="event-image">
-    <img src="{{ asset('image/img (9).jpg') }}" alt="Poster Event">
-  </div>
-  <div class="card-content">
-    <h3>Marathon Jakarta–Bandung 2025.</h3>
-    <a href="#" class="card-link">Lihat Detail ></a>
-  </div>
-</div>
+            <div class="community-card">
+                <div class="event-image">
+                    <img src="{{ asset('image/img (9).jpg') }}" alt="Poster Event">
+                </div>
+                <div class="card-content">
+                    <h3>Marathon Jakarta–Bandung 2025.</h3>
+                    <a href="#" class="card-link">Lihat Detail ></a>
+                </div>
+            </div>
 
 
-        <button class="slider-btn next-btn" id="event-next">❯</button>
-    </div>
+            <button class="slider-btn next-btn" id="event-next">❯</button>
+        </div>
 </section>
 
 <section class="section">
-  <div class="section-container">
-    <h2 class="section-title">HALL OF FAME</h2>
-    <h6 class="section-subtitle">
-    Mereka yang telah mengukir jejak terbaik di komunitas ini
-    </h6>
+    <div class="section-container">
+        <h2 class="section-title">HALL OF FAME</h2>
+        <h6 class="section-subtitle">
+            Mereka yang telah mengukir jejak terbaik di komunitas ini
+        </h6>
 
 
-    <div class="hof-grid">
-
-      <div class="hof-card">
-        <img class="avatar" src="{{ asset('image/download (13).jpg') }}">
-        <h4>hengky ugar</h4>
-        <h6>level 999</h6>
-        <div class="badges">
-          <img src="{{ asset('image/badges/badge (1).png') }}">
-          <img src="{{ asset('image/badges/badge (2).png') }}">
-          <img src="{{ asset('image/badges/badge (3).png') }}">
-          <img src="{{ asset('image/badges/badge (4).png') }}">
-          <img src="{{ asset('image/badges/badge (5).png') }}">
-        <img src="{{ asset('image/badges/badge (6).png') }}">
-        </div>
-      </div>
-
-      <div class="hof-card">
-        <img class="avatar" src="{{ asset('image/download (13).jpg') }}">
-        <h4>hengky farhan</h4>
-        <h6>level 998</h6>
-        <div class="badges">
-          <img src="{{ asset('image/badges/badge (1).png') }}">
-            <img src="{{ asset('image/badges/badge (2).png') }}">
-            <img src="{{ asset('image/badges/badge (3).png') }}">
-            <img src="{{ asset('image/badges/badge (4).png') }}">
-        </div>
-        </div>
-
-        <div class="hof-card">
-        <img class="avatar" src="{{ asset('image/download (13).jpg') }}">
-        <h4>ihsan hengky</h4>
-        <h6>level 997</h6>
-        <div class="badges">
-          <img src="{{ asset('image/badges/badge (1).png') }}">
-          <img src="{{ asset('image/badges/badge (2).png') }}">
-          <img src="{{ asset('image/badges/badge (4).png') }}">
-          <img src="{{ asset('image/badges/badge (6).png') }}">
-
-        </div>
-      </div>
-
-      <div class="hof-card">
-        <img class="avatar" src="{{ asset('image/download (13).jpg') }}">
-        <h4>afrizal hengky</h4>
-        <h6>level 996</h6>
-        <div class="badges">
-          <img src="{{ asset('image/badges/badge (1).png') }}">
-          <img src="{{ asset('image/badges/badge (2).png') }}">
-          <img src="{{ asset('image/badges/badge (3).png') }}">
-        </div>
-      </div>
-
-      <div class="hof-card">
-        <img class="avatar" src="{{ asset('image/download (13).jpg') }}">
-        <h4>hengky Nur</h4>
-        <h6>level 995</h6>
-        <div class="badges">
-          <img src="{{ asset('image/badges/badge (1).png') }}">
-          <img src="{{ asset('image/badges/badge (2).png') }}">
-
-        </div>
-      </div>
-
-
+        @include('partials.hall-of-fame', ['users' => $topUsers])
     </div>
-  </div>
 </section>
 
-<footer>
-  <div class="footer-container">
-    
-    <div class="footer-section">
-      <h3 class="footer-brand">ZHIB</h3>
-      <div class="footer-social">
-        <a href="#" class="social-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-        </a>
-        <a href="#" class="social-link">
-          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-        </a>
-        <a href="#" class="social-link">
-          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-        </a>
-      </div>
-    </div>
+@endsection
 
-    <div class="footer-section">
-      <a href="#" class="footer-text-link" onclick="openLogin(); return false;">Komunitas Saya</a>
-      <a href="#" class="footer-text-link" onclick="openLogin(); return false;">Cari Komunitas</a>
-    </div>
-
-    <div class="footer-section">
-      <a href="#" class="footer-text-link" onclick="openLogin(); return false;">Riwayat Event</a>
-      <a href="#" class="footer-text-link" onclick="openLogin(); return false;">Cari Event</a>
-    </div>
-
-    <div class="footer-section">
-      <a href="#" class="footer-text-link" onclick="openLogin(); return false;">Tentang Kami</a>
-    </div>
-
-  </div>
-</footer>
-
-        <script>
-
-/* ===============================
+@section('scripts')
+<script>
+    /* ===============================
    GENERIC SLIDER FUNCTION
 ================================ */
-function initSlider(containerId, prevBtnId, nextBtnId, scrollAmount) {
-  const container = document.getElementById(containerId);
-  const prevBtn = document.getElementById(prevBtnId);
-  const nextBtn = document.getElementById(nextBtnId);
+    function initSlider(containerId, prevBtnId, nextBtnId, scrollAmount) {
+        const container = document.getElementById(containerId);
+        const prevBtn = document.getElementById(prevBtnId);
+        const nextBtn = document.getElementById(nextBtnId);
 
-  if (!container || !prevBtn || !nextBtn) return;
+        if (!container || !prevBtn || !nextBtn) return;
 
-  nextBtn.addEventListener('click', () => {
-    container.scrollBy({
-      left: scrollAmount,
-      behavior: 'smooth'
+        nextBtn.addEventListener('click', () => {
+            container.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+
+        prevBtn.addEventListener('click', () => {
+            container.scrollBy({
+                left: -scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    /* ===============================
+       INIT AFTER DOM READY
+    =============================== */
+    document.addEventListener('DOMContentLoaded', () => {
+        // PILIHAN EVENT
+        initSlider(
+            'event-list', // id scroll-wrapper event
+            'event-prev', // tombol kiri event
+            'event-next', // tombol kanan event
+            260 // lebar 1 card + gap
+        );
     });
-  });
-
-  prevBtn.addEventListener('click', () => {
-    container.scrollBy({
-      left: -scrollAmount,
-      behavior: 'smooth'
-    });
-  });
-}
-
-/* ===============================
-   INIT AFTER DOM READY
-================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  // PILIHAN EVENT
-  initSlider(
-    'event-list',   // id scroll-wrapper event
-    'event-prev',   // tombol kiri event
-    'event-next',   // tombol kanan event
-    260             // lebar 1 card + gap
-  );
-});
 </script>
 
+@guest
+<!-- Auth overlays & modals (only for guests) -->
 <div class="auth-overlay" id="authOverlay"></div>
+<div id="blade-helpers" data-has-errors="{{ $errors->any() ? '1' : '0' }}"
+    data-register-errors="{{ (old('nama') || $errors->has('nama') || $errors->has('password') || $errors->has('password_confirmation')) ? '1' : '0' }}"
+    style="display:none"></div>
 
 <div class="auth-modal" id="loginModal">
-  <button class="close-btn" onclick="closeAuth()">×</button>
-  <h2>Masuk</h2>
+    <button class="close-btn" onclick="closeAuth()">×</button>
+    <h2>Masuk</h2>
 
-  <label>Username/Email</label>
-  <input type="text" placeholder="Masukkan Username/Email Anda">
+    @if($errors->has('email'))
+    <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('email') }}</div>
+    @endif
 
-  <label>Password</label>
-  <input type="password" placeholder="Masukkan Password Anda">
+    <form method="POST" action="{{ route('login.post') }}">
+        @csrf
 
-<div class="form-options">
-  <label class="remember">
-    <input type="checkbox">
-    Remember me
-  </label>
+        <label>Username/Email</label>
+        <input type="text" name="email" value="{{ old('email') }}" placeholder="Masukkan Username/Email Anda">
 
-<a href="#" class="forgot-link" onclick="openForgot()">Lupa?</a>
-</div>
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Masukkan Password Anda">
 
-  <button class="primary-btn" onclick="loginSuccess()">Masuk</button>
+        <div class="form-options">
+            <label class="remember">
+                <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                Remember me
+            </label>
 
-  <p class="switch-text">
-    Belum Punya Akun? 
-    <a href="#" onclick="switchToRegister()">Buat Akun</a>
-  </p>
+            <a href="#" class="forgot-link" onclick="openForgot()">Lupa?</a>
+        </div>
+
+        <button type="submit" class="primary-btn">Masuk</button>
+    </form>
+
+    <p class="switch-text">
+        Belum Punya Akun?
+        <a href="#" onclick="switchToRegister()">Buat Akun</a>
+    </p>
 </div>
 
 <div class="auth-modal" id="registerModal">
-  <button class="close-btn" onclick="closeAuth()">×</button>
-  <h2>Buat Akun</h2>
+    <button class="close-btn" onclick="closeAuth()">×</button>
+    <h2>Buat Akun</h2>
 
-  <label>Username</label>
-  <input type="text" placeholder="Masukkan Username Anda">
+    @if(session('status'))
+    <div class="success-message" style="color:#00695c;margin-bottom:8px;">{{ session('status') }}</div>
+    @endif
 
-  <label>Email</label>
-  <input type="email" placeholder="Masukkan Email Anda">
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
 
-  <label>Password</label>
-  <input type="password" placeholder="Masukkan Password Anda">
+        <label>Username</label>
+        <input type="text" name="nama" value="{{ old('nama') }}" placeholder="Masukkan Username Anda">
+        @if($errors->has('nama'))
+        <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('nama') }}</div>
+        @endif
 
-  <label>Konfirmasi Password</label>
-  <input type="password" placeholder="Konfirmasi Password Anda">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ old('email') }}" placeholder="Masukkan Email Anda">
+        @if($errors->has('email'))
+        <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('email') }}</div>
+        @endif
 
-  <div class="register-agree">
-  <input type="checkbox">
-  <span>Saya setuju dengan Syarat & Ketentuan</span>
-</div>
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Masukkan Password Anda">
+        @if($errors->has('password'))
+        <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('password') }}</div>
+        @endif
 
-<button class="primary-btn" onclick="registerSuccess()">Buat Akun</button>
+        <label>Konfirmasi Password</label>
+        <input type="password" name="password_confirmation" placeholder="Konfirmasi Password Anda">
 
-  <p class="switch-text">
-    Sudah Punya Akun?
-    <a href="#" onclick="switchToLogin()">Masuk</a>
-  </p>
+        <div class="register-agree">
+            <input type="checkbox" name="agree" {{ old('agree') ? 'checked' : '' }}>
+            <span>Saya setuju dengan Syarat & Ketentuan</span>
+        </div>
+
+        <button type="submit" class="primary-btn">Buat Akun</button>
+    </form>
+
+    <p class="switch-text">
+        Sudah Punya Akun?
+        <a href="#" onclick="switchToLogin()">Masuk</a>
+    </p>
 </div>
 
 <div class="auth-modal" id="forgotModal">
-  <button class="close-btn" onclick="closeAuth()">×</button>
+    <button class="close-btn" onclick="closeAuth()">×</button>
 
-  <h2>Lupa sandi?</h2>
+    <h2>Lupa sandi?</h2>
 
-  <img src="{{ asset('image/icon/lupasandi.png') }}" alt="Lupa Sandi" class="forgot-icon">
+    <img src="{{ asset('image/icon/lupasandi.png') }}" alt="Lupa Sandi" class="forgot-icon">
 
-  <p class="forgot-desc">
-    Silahkan masukkan Username atau Email Anda dan kami akan
-    mengirimkan tautan untuk masuk ke akun anda semula
-  </p>
+    <p class="forgot-desc">
+        Silahkan masukkan Username atau Email Anda dan kami akan
+        mengirimkan tautan untuk masuk ke akun anda semula
+    </p>
 
-  <input type="text" placeholder="Masukkan Username/Email Anda">
+    <input type="text" placeholder="Masukkan Username/Email Anda">
 
-  <button class="primary-btn" onclick="goToResetPage()">
-    Kirim Tautan
-  </button>
+    <button class="primary-btn" onclick="goToResetPage()">
+        Kirim Tautan
+    </button>
 
-  <div class="divider">ATAU</div>
+    <div class="divider">ATAU</div>
 
-  <a href="#" onclick="openRegister()">Buat Akun Baru</a>
+    <a href="#" onclick="openRegister()">Buat Akun Baru</a>
 </div>
 
 <script>
-// 1. Definisikan Elemen
-const overlay = document.getElementById('authOverlay');
-const loginModal = document.getElementById('loginModal');
-const registerModal = document.getElementById('registerModal');
-const forgotModal = document.getElementById('forgotModal');
+    // 1. Definisikan Elemen
+    const overlay = document.getElementById('authOverlay');
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+    const forgotModal = document.getElementById('forgotModal');
 
-// 2. Fungsi Reset Tampilan (Sembunyikan semua modal)
-function closeAuth() {
-  overlay.style.display = 'none';
-  loginModal.style.display = 'none';
-  registerModal.style.display = 'none';
-  forgotModal.style.display = 'none';
-}
+    // 2. Helper: Hapus pesan error/success di modal auth
+    function clearAuthErrors() {
+        // Hapus pesan error/success yang di-render server
+        loginModal.querySelectorAll('.error-message, .success-message').forEach(el => el.remove());
+        registerModal.querySelectorAll('.error-message, .success-message').forEach(el => el.remove());
 
-// 3. Fungsi Buka Login (Awal)
-function openLogin() {
-  closeAuth(); // Tutup yang lain dulu biar aman
-  overlay.style.display = 'block';
-  loginModal.style.display = 'block';
-}
+        // Update helper dataset agar tidak auto-open lagi pada runtime
+        const bladeHelpers = document.getElementById('blade-helpers');
+        if (bladeHelpers) {
+            bladeHelpers.dataset.hasErrors = '0';
+            bladeHelpers.dataset.registerErrors = '0';
+        }
+    }
 
-// 4. Fungsi Buka Register (Awal)
-function openRegister() {
-  closeAuth();
-  overlay.style.display = 'block';
-  registerModal.style.display = 'block';
-}
+    // 3. Fungsi Reset Tampilan (Sembunyikan semua modal)
+    function closeAuth() {
+        overlay.style.display = 'none';
+        loginModal.style.display = 'none';
+        registerModal.style.display = 'none';
+        forgotModal.style.display = 'none';
 
-// 5. Fungsi Buka Lupa Password
-function openForgot() {
-  closeAuth();
-  overlay.style.display = 'block';
-  forgotModal.style.display = 'block';
-}
+        // Clear any leftover server-rendered messages so switching modals is clean
+        clearAuthErrors();
+    }
 
-// 6. Fungsi Pindah dari Login ke Register (YANG HILANG TADI)
-function switchToRegister() {
-  loginModal.style.display = 'none';
-  registerModal.style.display = 'block';
-}
+    // 4. Fungsi Buka Login (Awal)
+    function openLogin() {
+        // Jangan clear server-rendered messages saat membuka login otomatis
+        registerModal.style.display = 'none';
+        forgotModal.style.display = 'none';
+        overlay.style.display = 'block';
+        loginModal.style.display = 'block';
+    }
 
-// 7. Fungsi Pindah dari Register ke Login (YANG HILANG TADI)
-function switchToLogin() {
-  registerModal.style.display = 'none';
-  loginModal.style.display = 'block';
-}
+    // 4. Fungsi Buka Register (Awal)
+    function openRegister() {
+        // Jangan clear server-rendered messages saat membuka register
+        loginModal.style.display = 'none';
+        forgotModal.style.display = 'none';
+        overlay.style.display = 'block';
+        registerModal.style.display = 'block';
+    }
 
-// 8. Fungsi Reset Password Action
-function goToResetPage() {
-    // Redirect ke Route Laravel 'reset-password'
-    window.location.href = "{{ url('/reset-password') }}";
-}
+    // 5. Fungsi Buka Lupa Password
+    function openForgot() {
+        // Jangan clear server-rendered messages saat membuka forgot
+        loginModal.style.display = 'none';
+        registerModal.style.display = 'none';
+        overlay.style.display = 'block';
+        forgotModal.style.display = 'block';
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
+    // 6. Fungsi Pindah dari Login ke Register (YANG HILANG TADI)
+    function switchToRegister() {
+        // bersihkan pesan sebelum pindah
+        clearAuthErrors();
+        loginModal.style.display = 'none';
+        registerModal.style.display = 'block';
+    }
 
-  if (params.get('login') === '1') {
-    openLogin();
-  }
-});
+    // 7. Fungsi Pindah dari Register ke Login (YANG HILANG TADI)
+    function switchToLogin() {
+        // bersihkan pesan sebelum pindah
+        clearAuthErrors();
+        registerModal.style.display = 'none';
+        loginModal.style.display = 'block';
+    }
 
-function loginSuccess() {
-  // Redirect ke Route Laravel 'home'
-  window.location.href = "{{ url('/home') }}";
-}
+    // 8. Fungsi Reset Password Action
+    function goToResetPage() {
+        // Redirect ke Route Laravel 'reset-password'
+        window.location.href = "{{ url('/reset-password') }}";
+    }
 
-function registerSuccess() {
-  // simulasi register berhasil
-  closeAuth();       // tutup semua modal
-  openLogin();       // buka popup login
-}
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
 
-// 9. Event Listener untuk klik Overlay (Klik luar modal = tutup)
-overlay.addEventListener('click', (e) => {
-  if (e.target === overlay) {
-    closeAuth();
-  }
-});
+        if (params.get('login') === '1') {
+            openLogin();
+        }
 
-// 10. Cek URL Parameter (Opsional, untuk auto open register)
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('register') === '1') {
-    openRegister();
-  }
-});
-
-/* ===============================
-   GUEST NAVBAR INTERCEPT
-================================ */
-document.addEventListener('DOMContentLoaded', () => {
-  const guestLinks = document.querySelectorAll('[data-auth]');
-
-  guestLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      openLogin();
+        const __hasErrors = document.getElementById('blade-helpers')?.dataset.hasErrors === '1';
+        if (__hasErrors) {
+            openLogin();
+        }
     });
-  });
-});
 
+    function registerSuccess() {
+        // simulasi register berhasil
+        closeAuth(); // tutup semua modal
+        openLogin(); // buka popup login
+    }
+
+    // 9. Event Listener untuk klik Overlay (Klik luar modal = tutup)
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeAuth();
+        }
+    });
+
+    // 10. Cek URL Parameter (Opsional, untuk auto open register)
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('register') === '1') {
+            openRegister();
+        }
+
+        const regErr = document.getElementById('blade-helpers')?.dataset.registerErrors === '1';
+        if (regErr) {
+            openRegister();
+        }
+    });
+
+    /* ===============================
+       GUEST NAVBAR INTERCEPT
+    =============================== */
+    document.addEventListener('DOMContentLoaded', () => {
+        const guestLinks = document.querySelectorAll('[data-auth]');
+
+        guestLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                openLogin();
+            });
+        });
+    });
 </script>
 
-</body>
-</html>
+@endguest
+
+@endsection

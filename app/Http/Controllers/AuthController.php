@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Tampilkan form login
+    // Tampilkan form login (landing modal)
     public function showLoginForm()
     {
-        return view('auth.login');
+        // Landing page contains the login modal and proper CSRF tokens.
+        return redirect('/?login=1');
     }
 
     // Proses login
@@ -32,22 +33,32 @@ class AuthController extends Controller
             Auth::login($user, $request->remember);
             $request->session()->regenerate();
 
-            // Redirect berdasarkan role
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
-            return redirect()->route('home');
+            // Redirect: prefer intended URL but default admins to admin dashboard
+            $default = ($user->role === 'admin') ? route('admin.dashboard') : route('home');
+            return redirect()->intended($default);
         }
 
-        return back()->withErrors([
+        // Redirect to landing page where the login modal exists so CSRF/token+session remain valid
+        return redirect('/?login=1')->withErrors([
             'email' => 'Email atau kata sandi salah.',
-        ])->onlyInput('email');
+        ])->withInput();
     }
 
-    // Tampilkan form register
+    // Tampilkan form register (landing modal)
     public function showRegisterForm()
     {
-        return view('auth.register');
+        return redirect('/?register=1');
+    }
+
+    // Backwards-compatible aliases used by routes
+    public function showLogin()
+    {
+        return $this->showLoginForm();
+    }
+
+    public function showRegister()
+    {
+        return $this->showRegisterForm();
     }
 
     // Proses register
@@ -68,9 +79,8 @@ class AuthController extends Controller
             'level_terkini' => 1,
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('home');
+        // Require the user to login after registration instead of auto-login
+        return redirect('/?register=1')->with('status', 'Akun berhasil dibuat. Silakan masuk.');
     }
 
     // Logout
@@ -80,5 +90,18 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    }
+
+    // Dashboard route target (simple dispatcher)
+    public function dashboard()
+    {
+        $user = Auth::user();
+        if (!$user) return redirect()->route('login');
+
+        if ($user->role === 'admin') {
+            return view('admin.dashboard');
+        }
+
+        return view('dashboard');
     }
 }
