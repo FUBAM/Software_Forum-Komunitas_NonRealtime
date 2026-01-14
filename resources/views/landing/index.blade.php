@@ -19,49 +19,20 @@
         <h2 class="section-title">REKOMENDASI BERITA</h2>
 
         <div class="grid-3">
+            @forelse($berita as $item)
+                <a href="{{ route('berita.detail', $item->id) }}"
+                   class="news-card"
+                   @guest onclick="openLogin(); return false;" @endguest>
 
-            <a href="#" class="news-card" onclick="openLogin(); return false;">
-                <div class="news-image-frame">
-                    <img src="{{ asset('image/img (9).jpg') }}">
-                </div>
-                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-            </a>
+                    <div class="news-image-frame">
+                        <img src="{{ asset($item->gambar_url ?? 'image/default-news.jpg') }}">
+                    </div>
 
-            <a href="#" class="news-card" onclick="openLogin(); return false;">
-                <div class="news-image-frame">
-                    <img src="{{ asset('image/img (1).jpg') }}">
-                </div>
-                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-            </a>
-
-            <a href="#" class="news-card" onclick="openLogin(); return false;">
-                <div class="news-image-frame">
-                    <img src="{{ asset('image/img (10).jpg') }}">
-                </div>
-                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-            </a>
-
-            <a href="#" class="news-card" onclick="openLogin(); return false;">
-                <div class="news-image-frame">
-                    <img src="{{ asset('image/img (9).jpg') }}">
-                </div>
-                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-            </a>
-
-            <a href="#" class="news-card" onclick="openLogin(); return false;">
-                <div class="news-image-frame">
-                    <img src="{{ asset('image/img (5).jpg') }}">
-                </div>
-                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-            </a>
-
-            <a href="#" class="news-card" onclick="openLogin(); return false;">
-                <div class="news-image-frame">
-                    <img src="{{ asset('image/img (10).jpg') }}">
-                </div>
-                <p>Turnamen futsal Open Sumatera dengan total hadiah jutaan rupiah.</p>
-            </a>
-
+                    <p>{{ Str::limit($item->judul, 80) }}</p>
+                </a>
+            @empty
+                <p>Tidak ada berita.</p>
+            @endforelse
         </div>
     </div>
 </section>
@@ -77,80 +48,25 @@
         <button class="slider-btn prev-btn" id="event-prev">❮</button>
 
         <div class="scroll-wrapper" id="event-list">
+            @foreach($events as $event)
+                <div class="community-card">
+                    <div class="event-image">
+                        <img src="{{ asset($event->poster_url ?? 'image/default-event.jpg') }}">
+                    </div>
 
-            <div class="community-card">
-                <div class="event-image">
-                    <img src="{{ asset('image/img (1).jpg') }}" alt="Poster Event">
-                </div>
-                <div class="card-content">
-                    <h3>Turnamen futsal Open Sumatera total hadiah jutaan rupiah.</h3>
-                    <a href="#" class="card-link">Lihat Detail ></a>
-                </div>
-            </div>
+                    <div class="card-content">
+                        <h3>{{ Str::limit($event->judul, 60) }}</h3>
 
-            <div class="community-card">
-                <div class="event-image">
-                    <img src="{{ asset('image/img (2).jpg') }}" alt="Poster Event">
+                        <a href="{{ route('events.show', $event->id) }}"
+                        class="card-link"
+                        @guest onclick="openLogin(); return false;" @endguest>
+                            Lihat Detail &gt;
+                        </a>
+                    </div>
                 </div>
-                <div class="card-content">
-                    <h3>Kompetisi Mobile Legends offline.</h3>
-                    <a href="#" class="card-link">Lihat Detail ></a>
-                </div>
-            </div>
-
-            <div class="community-card">
-                <div class="event-image">
-                    <img src="{{ asset('image/img (3).jpg') }}" alt="Poster Event">
-                </div>
-                <div class="card-content">
-                    <h3>Marathon Jakarta–Bandung 2025.</h3>
-                    <a href="#" class="card-link">Lihat Detail ></a>
-                </div>
-            </div>
-
-            <div class="community-card">
-                <div class="event-image">
-                    <img src="{{ asset('image/img (4).jpg') }}" alt="Poster Event">
-                </div>
-                <div class="card-content">
-                    <h3>Workshop fotografi untuk pemula.</h3>
-                    <a href="#" class="card-link">Lihat Detail ></a>
-                </div>
-            </div>
-
-            <div class="community-card">
-                <div class="event-image">
-                    <img src="{{ asset('image/img (1).jpg') }}" alt="Poster Event">
-                </div>
-                <div class="card-content">
-                    <h3>Turnamen futsal Open Sumatera total hadiah jutaan rupiah.</h3>
-                    <a href="#" class="card-link">Lihat Detail ></a>
-                </div>
-            </div>
-
-            <div class="community-card">
-                <div class="event-image">
-                    <img src="{{ asset('image/img (2).jpg') }}" alt="Poster Event">
-                </div>
-                <div class="card-content">
-                    <h3>Kompetisi Mobile Legends offline.</h3>
-                    <a href="#" class="card-link">Lihat Detail ></a>
-                </div>
-            </div>
-
-            <div class="community-card">
-                <div class="event-image">
-                    <img src="{{ asset('image/img (9).jpg') }}" alt="Poster Event">
-                </div>
-                <div class="card-content">
-                    <h3>Marathon Jakarta–Bandung 2025.</h3>
-                    <a href="#" class="card-link">Lihat Detail ></a>
-                </div>
-            </div>
-
-
-            <button class="slider-btn next-btn" id="event-next">❯</button>
+            @endforeach
         </div>
+    </div>    
 </section>
 
 <section class="section">
@@ -159,9 +75,7 @@
         <h6 class="section-subtitle">
             Mereka yang telah mengukir jejak terbaik di komunitas ini
         </h6>
-
-
-        @include('partials.hall-of-fame', ['users' => $topUsers])
+        @include('partials.hall-of-fame', ['users' => $hallOfFame])
     </div>
 </section>
 
@@ -223,14 +137,14 @@
     <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('email') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('login.post') }}">
+    <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <label>Username/Email</label>
-        <input type="text" name="email" value="{{ old('email') }}" placeholder="Masukkan Username/Email Anda">
+        <label>Username / Email</label>
+        <input type="text" name="login" value="{{ old('login') }}">
 
         <label>Password</label>
-        <input type="password" name="password" placeholder="Masukkan Password Anda">
+        <input type="password" name="password">
 
         <div class="form-options">
             <label class="remember">
@@ -239,7 +153,7 @@
             </label>
 
             <a href="#" class="forgot-link" onclick="openForgot()">Lupa?</a>
-        </div>
+        </div>        
 
         <button type="submit" class="primary-btn">Masuk</button>
     </form>
@@ -262,28 +176,19 @@
         @csrf
 
         <label>Username</label>
-        <input type="text" name="nama" value="{{ old('nama') }}" placeholder="Masukkan Username Anda">
-        @if($errors->has('nama'))
-        <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('nama') }}</div>
-        @endif
+        <input type="text" name="username" value="{{ old('username') }}">
 
         <label>Email</label>
-        <input type="email" name="email" value="{{ old('email') }}" placeholder="Masukkan Email Anda">
-        @if($errors->has('email'))
-        <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('email') }}</div>
-        @endif
+        <input type="email" name="email" value="{{ old('email') }}">
 
         <label>Password</label>
-        <input type="password" name="password" placeholder="Masukkan Password Anda">
-        @if($errors->has('password'))
-        <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('password') }}</div>
-        @endif
+        <input type="password" name="password">
 
         <label>Konfirmasi Password</label>
-        <input type="password" name="password_confirmation" placeholder="Konfirmasi Password Anda">
+        <input type="password" name="password_confirmation">
 
         <div class="register-agree">
-            <input type="checkbox" name="agree" {{ old('agree') ? 'checked' : '' }}>
+            <input type="checkbox" name="terms" {{ old('terms') ? 'checked' : '' }}>
             <span>Saya setuju dengan Syarat & Ketentuan</span>
         </div>
 

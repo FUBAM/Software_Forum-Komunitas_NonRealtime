@@ -1,0 +1,68 @@
+/* ================= FOOTER FINAL (SEMUA JADI LINK & UKURAN SAMA) ================= */
+footer {
+    background: #232323;
+    padding: 50px 0;
+    color: #ffffff;
+    margin-top: auto;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    align-items: start;
+}
+
+/* Logo ZHIB (Tetap paling besar karena Brand) */
+.footer-brand {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* 5 TULISAN DI FOOTER (UKURAN SAMA & JADI TOMBOL) */
+.footer-text-link {
+    color: #ffffff;
+    font-size: 15px; /* Ukuran seragam */
+    font-weight: 700; /* Tebal (Bold) agar seperti tombol tulisan */
+    text-decoration: none;
+    display: block; /* Agar setiap link baris baru */
+    margin-bottom: 14px; /* Jarak antar tulisan */
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+/* Efek Hover (Merah saat disentuh) */
+.footer-text-link:hover {
+    color: #ff2d2d;
+    transform: translateX(5px);
+}
+
+/* Icon Sosmed */
+.footer-social {
+    display: flex;
+    gap: 15px;
+}
+
+.social-link {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.social-link svg {
+    width: 24px;
+    height: 24px;
+}
+
+.social-link:hover {
+    color: #ff2d2d;
+    transform: translateY(-3px);
+}

@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\AnggotaKomunitas;
-use App\Models\Badge;
-use App\Models\BadgeUser;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany komunitas()
+ * @property-read int $xp_total
+ * @property-read int $trust_score
  */
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     protected $table = 'users';
 
@@ -29,31 +28,88 @@ class User extends Authenticatable
         'skor_kepercayaan',
         'terpercaya',
         'foto_profil_url',
-        'bio'
+        'bio',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'terpercaya' => 'boolean',
+        'password'          => 'hashed',
+        'terpercaya'        => 'boolean',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESSORS (ADAPTER UNTUK FRONTEND & CONTROLLER)
+    |--------------------------------------------------------------------------
+    */
+
+    // Untuk Hall of Fame: $user->xp_total
+    public function getXpTotalAttribute(): int
+    {
+        return (int) ($this->xp_terkini ?? 0);
+    }
+
+    // Alias aman untuk Trust Score
+    public function getTrustScoreAttribute(): int
+    {
+        return (int) ($this->skor_kepercayaan ?? 0);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROLE & HELPER
+    |--------------------------------------------------------------------------
+    */
 
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
-    public function communities(): BelongsToMany
+    public function isMember(): bool
     {
-        return $this->belongsToMany(Komunitas::class, 'anggota_komunitas', 'user_id', 'komunitas_id')
-            ->using('App\\Models\\AnggotaKomunitas')
-            ->withPivot('role', 'joined_at')
-            ->withTimestamps();
+        return $this->role === 'member';
     }
 
-    public function isModeratorOf($communityId): bool
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+
+    // Komunitas yang dibuat user
+    public function komunitasBuatan(): HasMany
+    {
+        return $this->hasMany(Komunitas::class, 'pembuat_id');
+    }
+
+    // Relasi ke komunitas (dengan pivot role moderator)
+    public function communities(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Komunitas::class,
+            'anggota_komunitas',
+            'user_id',
+            'komunitas_id'
+        )
+        ->using(AnggotaKomunitas::class)
+        ->withPivot('id', 'role', 'joined_at')
+        ->withTimestamps();
+    }
+
+    // Alias Bahasa Indonesia
+    public function komunitas(): BelongsToMany
+    {
+        return $this->communities();
+    }
+
+    // Cek moderator via pivot (WAJIB tetap)
+    public function isModeratorOf(int $communityId): bool
     {
         return $this->communities()
             ->where('komunitas_id', $communityId)
@@ -61,24 +117,30 @@ class User extends Authenticatable
             ->exists();
     }
 
+    // Event yang diikuti user
     public function events(): BelongsToMany
     {
-        return $this->belongsToMany(Events::class, 'peserta_kegiatan', 'user_id', 'events_id')
-            ->using(PesertaKegiatan::class)
-            ->withPivot('status', 'bukti_url', 'review_text')
-            ->withTimestamps();
+        return $this->belongsToMany(
+            Events::class,
+            'peserta_kegiatan',
+            'user_id',
+            'events_id'
+        )
+        ->using(PesertaKegiatan::class)
+        ->withPivot('status', 'bukti_url', 'review_text')
+        ->withTimestamps();
     }
 
+    // Badge user (gamifikasi tambahan)
     public function badges(): BelongsToMany
     {
-        return $this->belongsToMany('App\\Models\\Badge', 'badge_user', 'user_id', 'badge_id')
-            ->using('App\\Models\\BadgeUser')
-            ->withPivot('earned_at');
-    }
-
-    // Alias untuk nama relasi Bahasa Indonesia
-    public function komunitas(): BelongsToMany
-    {
-        return $this->communities();
+        return $this->belongsToMany(
+            Badge::class,
+            'badge_user',
+            'user_id',
+            'badge_id'
+        )
+        ->using(BadgeUser::class)
+        ->withPivot('earned_at');
     }
 }

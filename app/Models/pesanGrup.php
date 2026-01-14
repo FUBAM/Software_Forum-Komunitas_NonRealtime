@@ -3,23 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Grup;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PesanGrup extends Model
 {
     protected $table = 'pesan_grup';
 
-    protected $fillable = ['grup_id', 'user_id', 'pesan', 'lampiran_url', 'is_pinned'];
+    protected $fillable = [
+        'grup_id',
+        'user_id',
+        'pesan',
+        'lampiran_url',
+        'is_pinned',
+    ];
 
     protected $casts = [
         'is_pinned' => 'boolean',
     ];
 
-    public function grub()
+    public function grup(): BelongsTo
     {
-        return $this->belongsTo(Grub::class, 'grup_id');
+        return $this->belongsTo(Grup::class, 'grup_id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }

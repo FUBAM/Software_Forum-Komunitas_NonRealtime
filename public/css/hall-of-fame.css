@@ -1,0 +1,47 @@
+/* ================= HALL OF FAME (SCROLLABLE) ================= */
+.hof-grid {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    flex-wrap: nowrap;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 400; /* tidak bold */
+    color: #6b7280; /* abu halus */
+    margin-top: -20px; /* mendekat ke judul */
+    margin-bottom: 40px;
+}
+
+.hof-card {
+    min-width: 200px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.hof-card h4 {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.badges {
+    margin-top: 8px;
+}
+
+.badges img {
+    width: 20px;
+    margin: 0 4px;
+}

@@ -7,38 +7,51 @@ use App\Models\Events;
 use App\Models\Pembayaran;
 use App\Models\Komunitas;
 use App\Models\Laporan;
-use Illuminate\Http\Request;
+use App\Models\AnggotaKomunitas;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | DISPATCH DASHBOARD (AUTO ROLE)
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        /** @var \App\Models\User|null $user */
         $user = Auth::user();
-
-        if ($user && $user->role === 'admin') {
-            // Jika Anda sudah punya view admin, ganti 'dashboard' dengan 'admin.dashboard'
-            // return view('admin.dashboard');
-            return view('dashboard'); // Sementara pakai dashboard user dulu
+        if (! $user) {
+            return redirect('/');
         }
 
-        // Tampilkan dashboard member
-        return view('dashboard');
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return view('dashboard.member.index');
     }
 
-    // Dashboard Utama Admin Pusat
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD ADMIN PUSAT
+    |--------------------------------------------------------------------------
+    */
+
     public function adminIndex()
     {
-        // Statistik Ringkasan
+        $user = Auth::user();
+        if (! $user || $user->role !== 'admin') {
+            abort(403);
+        }
+
         $stats = [
-            'total_user' => User::where('role', 'member')->count(),
+            'total_user'         => User::where('role', 'member')->count(),
             'pembayaran_pending' => Pembayaran::where('status', 'pending')->count(),
-            'lomba_aktif' => Events::where('type', 'lomba')->where('status', 'published')->count(),
-            'laporan_baru' => Laporan::where('status', 'pending')->count(),
+            'lomba_aktif'        => Events::where('type', 'lomba')->where('status', 'published')->count(),
+            'laporan_baru'       => Laporan::where('status', 'pending')->count(),
         ];
 
-        // 5 Pembayaran Terbaru yang butuh verifikasi
         $latest_payments = Pembayaran::with(['user', 'event'])
             ->where('status', 'pending')
             ->latest()
@@ -48,25 +61,38 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact('stats', 'latest_payments'));
     }
 
-    // Dashboard Moderator Komunitas
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD MODERATOR KOMUNITAS
+    |--------------------------------------------------------------------------
+    */
+
     public function moderatorIndex($komunitasId)
     {
-        /** @var \App\Models\User|null $user */
         $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
 
-        // Cek validasi akses moderator lokal
-        if (!$user || !$user->isModeratorOf($komunitasId)) {
-            abort(403, 'Akses Ditolak. Anda bukan moderator komunitas ini.');
+        $isModerator = AnggotaKomunitas::where('user_id', $user->id)
+            ->where('komunitas_id', $komunitasId)
+            ->where('role', 'moderator')
+            ->exists();
+
+        if (! $isModerator) {
+            abort(403, 'Akses ditolak. Anda bukan moderator komunitas ini.');
         }
 
         $komunitas = Komunitas::withCount('anggota')->findOrFail($komunitasId);
 
-        // Kegiatan Internal Komunitas Ini
         $kegiatan_internal = Events::where('komunitas_id', $komunitasId)
             ->where('type', 'kegiatan')
             ->latest()
             ->get();
 
-        return view('moderator.dashboard', compact('komunitas', 'kegiatan_internal'));
+        return view('dashboard.moderator.index', compact(
+            'komunitas',
+            'kegiatan_internal'
+        ));
     }
 }

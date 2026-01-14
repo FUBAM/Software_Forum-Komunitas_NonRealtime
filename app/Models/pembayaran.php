@@ -3,36 +3,48 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Events;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pembayaran extends Model
 {
     protected $table = 'pembayaran';
+
     protected $fillable = [
         'user_id',
         'events_id',
         'jumlah_bayar',
         'bukti_url',
-        'status', // 'pending', 'lunas', 'ditolak'
+        'status', // pending, lunas, ditolak
         'diverifikasi_oleh',
-        'alasan_penolakan'
+        'alasan_penolakan',
     ];
 
     protected $casts = [
         'jumlah_bayar' => 'decimal:2',
     ];
 
-    public function user()
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function event()
+    public function event(): BelongsTo
     {
         return $this->belongsTo(Events::class, 'events_id');
     }
 
-    // Admin yang melakukan verifikasi
-    public function verifier()
+    /**
+     * Admin yang memverifikasi pembayaran
+     */
+    public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'diverifikasi_oleh');
     }

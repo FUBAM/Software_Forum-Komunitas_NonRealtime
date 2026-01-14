@@ -9,99 +9,123 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Tampilkan form login (landing modal)
-    public function showLoginForm()
-    {
-        // Landing page contains the login modal and proper CSRF tokens.
-        return redirect('/?login=1');
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | LOGIN (POPUP VIA LANDING)
+    |--------------------------------------------------------------------------
+    */
 
-    // Proses login
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        $request->validate([
+            'login'    => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        // Ubah 'email' jadi 'email_pengguna' sesuai database
-        // Auth::attempt butuh penyesuaian jika nama kolom custom
-        // Cara manual cek user:
-        $user = User::where('email', $request->email)->first();
+        $login = $request->login;
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user, $request->remember);
-            $request->session()->regenerate();
+        // Cari user berdasarkan email ATAU nama
+        $user = User::where('email', $login)
+            ->orWhere('nama', $login)
+            ->first();
 
-            // Redirect: prefer intended URL but default admins to admin dashboard
-            $default = ($user->role === 'admin') ? route('admin.dashboard') : route('home');
-            return redirect()->intended($default);
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return redirect('/?login=1')
+                ->withErrors(['login' => 'Username / Email atau password salah'])
+                ->withInput();
         }
 
-        // Redirect to landing page where the login modal exists so CSRF/token+session remain valid
-        return redirect('/?login=1')->withErrors([
-            'email' => 'Email atau kata sandi salah.',
-        ])->withInput();
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        // Redirect sesuai role (TANPA method custom)
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return redirect()->intended(route('home'));
     }
 
-    // Tampilkan form register (landing modal)
-    public function showRegisterForm()
+    /*
+    |--------------------------------------------------------------------------
+    | REGISTER (POPUP)
+    |--------------------------------------------------------------------------
+    */
+
+    public function register(Request $request)
     {
-        return redirect('/?register=1');
+        $request->validate([
+            'username' => 'required|string|max:100|unique:users,nama',
+            'email'    => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'terms'    => 'accepted',
+        ], [
+            'terms.accepted' => 'Anda harus menyetujui syarat dan ketentuan.',
+        ]);
+
+        User::create([
+            'nama'          => $request->username,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'role'          => 'member',
+            'xp_terkini'    => 0,
+            'level_terkini' => 1,
+        ]);
+
+        return redirect('/?login=1')
+            ->with('status', 'Akun berhasil dibuat. Silakan login.');
     }
 
-    // Backwards-compatible aliases used by routes
+    /*
+    |--------------------------------------------------------------------------
+    | LOGOUT
+    |--------------------------------------------------------------------------
+    */
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD DISPATCHER
+    |--------------------------------------------------------------------------
+    */
+
+    public function dashboard()
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return redirect('/');
+        }
+
+        if ($user->role === 'admin') {
+            return view('admin.index');
+        }
+
+        return view('dashboard.member.index');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | BACKWARD COMPATIBILITY
+    |--------------------------------------------------------------------------
+    */
+
     public function showLogin()
     {
-        return $this->showLoginForm();
+        return redirect('/?login=1');
     }
 
     public function showRegister()
     {
-        return $this->showRegisterForm();
-    }
-
-    // Proses register
-    public function register(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $user = User::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'member',
-            'xp_terkini' => 0,
-            'level_terkini' => 1,
-        ]);
-
-        // Require the user to login after registration instead of auto-login
-        return redirect('/?register=1')->with('status', 'Akun berhasil dibuat. Silakan masuk.');
-    }
-
-    // Logout
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
-    }
-
-    // Dashboard route target (simple dispatcher)
-    public function dashboard()
-    {
-        $user = Auth::user();
-        if (!$user) return redirect()->route('login');
-
-        if ($user->role === 'admin') {
-            return view('admin.dashboard');
-        }
-
-        return view('dashboard');
+        return redirect('/?register=1');
     }
 }

@@ -5,73 +5,132 @@ namespace App\Http\Controllers;
 use App\Models\Pembayaran;
 use App\Models\Events;
 use App\Models\PesertaKegiatan;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PembayaranController extends Controller
 {
-    // Tampilkan Halaman Bayar
+    /*
+    |--------------------------------------------------------------------------
+    | FORM PEMBAYARAN (MEMBER)
+    |--------------------------------------------------------------------------
+    */
+
     public function create($eventId)
     {
-        $event = Events::findOrFail($eventId);
+        if (!Auth::check()) {
+            return redirect('/?login=1');
+        }
+
+        $event = Events::where('berbayar', true)
+            ->where('status', 'published')
+            ->findOrFail($eventId);
+
         return view('pembayaran.create', compact('event'));
     }
 
-    // User Mengirim Bukti Transfer
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN BUKTI PEMBAYARAN (MEMBER)
+    |--------------------------------------------------------------------------
+    */
+
     public function store(Request $request, $eventId)
     {
+        if (!Auth::check()) {
+            return redirect('/?login=1');
+        }
+
         $request->validate([
             'bukti_transfer' => 'required|image|max:2048',
-            'jumlah_bayar' => 'required|numeric'
+            'jumlah_bayar'   => 'required|numeric|min:0',
         ]);
 
-        $path = $request->file('bukti_transfer')->store('bukti_bayar', 'public');
+        // Cegah pembayaran ganda
+        $exists = Pembayaran::where('user_id', Auth::id())
+            ->where('events_id', $eventId)
+            ->whereIn('status', ['pending', 'lunas'])
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Anda sudah mengirim pembayaran untuk event ini.');
+        }
+
+        $path = $request->file('bukti_transfer')
+            ->store('bukti_bayar', 'public');
 
         Pembayaran::create([
-            'user_id' => Auth::id(),
-            'events_id' => $eventId,
-            'jumlah_bayar' => $request->jumlah_bayar,
-            'bukti_url' => $path,
-            'status' => 'pending'
+            'user_id'       => Auth::id(),
+            'events_id'     => $eventId,
+            'jumlah_bayar'  => $request->jumlah_bayar,
+            'bukti_url'     => $path,
+            'status'        => 'pending',
         ]);
 
-        return redirect()->route('events.show', $eventId)
-            ->with('success', 'Bukti terkirim. Menunggu verifikasi admin.');
+        return redirect()
+            ->route('events.show', $eventId)
+            ->with('success', 'Bukti pembayaran terkirim. Menunggu verifikasi admin.');
     }
 
-    // Admin: Verifikasi Pembayaran
+    /*
+    |--------------------------------------------------------------------------
+    | VERIFIKASI PEMBAYARAN (ADMIN)
+    |--------------------------------------------------------------------------
+    */
+
     public function verify(Request $request, $id)
     {
-        // Hanya admin yang boleh akses (cek middleware di route)
+        $user = Auth::user();
+        if (!$user || $user->role !== 'admin') {
+            abort(403);
+        }
+
         $pembayaran = Pembayaran::findOrFail($id);
 
-        if ($request->action == 'approve') {
-            $pembayaran->status = 'lunas';
-            $pembayaran->diverifikasi_oleh = Auth::id();
-            $pembayaran->save();
+        // Cegah verifikasi ulang
+        if ($pembayaran->status !== 'pending') {
+            return back()->with('error', 'Pembayaran sudah diproses.');
+        }
 
-            // Masukkan user ke tabel peserta_kegiatan
-            PesertaKegiatan::create([
-                'user_id' => $pembayaran->user_id,
-                'events_id' => $pembayaran->events_id,
-                'status' => 'kehadiran',
-                'bukti_url' => null,
-                'review_text' => null
+        if ($request->action === 'approve') {
+
+            $pembayaran->update([
+                'status'            => 'lunas',
+                'diverifikasi_oleh' => $user->id,
             ]);
 
-            // Tambah XP (Gamifikasi)
-            $user = $pembayaran->user;
-            $user->increment('xp_terkini', 10);
-            $user->increment('skor_kepercayaan', 5);
+            // Cegah duplikasi peserta
+            $exists = PesertaKegiatan::where('user_id', $pembayaran->user_id)
+                ->where('events_id', $pembayaran->events_id)
+                ->exists();
 
-            return back()->with('success', 'Pembayaran diterima.');
-        } else if ($request->action == 'reject') {
-            $pembayaran->status = 'ditolak';
-            $pembayaran->alasan_penolakan = $request->alasan;
-            $pembayaran->diverifikasi_oleh = Auth::id();
-            $pembayaran->save();
+            if (! $exists) {
+                PesertaKegiatan::create([
+                    'user_id'   => $pembayaran->user_id,
+                    'events_id' => $pembayaran->events_id,
+                    'status'    => 'tertarik',
+                ]);
+            }
+
+            return back()->with('success', 'Pembayaran berhasil diverifikasi.');
+        }
+
+        if ($request->action === 'reject') {
+
+            $request->validate([
+                'alasan' => 'required|string|max:255',
+            ]);
+
+            $pembayaran->update([
+                'status'             => 'ditolak',
+                'alasan_penolakan'   => $request->alasan,
+                'diverifikasi_oleh'  => $user->id,
+            ]);
 
             return back()->with('error', 'Pembayaran ditolak.');
         }
+
+        abort(400);
     }
 }

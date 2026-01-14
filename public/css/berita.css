@@ -1,0 +1,54 @@
+/* ================= NEWS ================= */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.news-card {
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    padding-bottom: 12px;
+
+    /* --- TAMBAHAN PENTING --- */
+    display: block; /* Agar link membungkus gambar & teks sepenuhnya */
+    text-decoration: none; /* Menghilangkan garis bawah biru */
+    color: inherit; /* Warna teks mengikuti aslinya (hitam) */
+    cursor: pointer; /* Ubah kursor jadi gambar tangan */
+    transition: transform 0.2s, box-shadow 0.2s; /* Animasi halus */
+}
+
+.news-card:hover {
+    transform: translateY(-5px); /* Kartu naik sedikit */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Muncul bayangan */
+}
+
+.news-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.news-card p {
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000000; /* Pastikan teks tetap hitam */
+}
+
+.news-image-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #fff; /* hitam kebiruan */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.news-image-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}

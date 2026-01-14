@@ -3,11 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Kota;
+use App\Models\Kategori;
+use App\Models\Events;
+use App\Models\Grup;
 use App\Models\AnggotaKomunitas;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $members
- * @uses \App\Models\AnggotaKomunitas
  */
 class Komunitas extends Model
 {
@@ -19,42 +26,70 @@ class Komunitas extends Model
         'pembuat_id',
         'nama',
         'deskripsi',
-        'icon_url'
+        'icon_url',
     ];
 
-    public function city()
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS (PRIMARY – GUNAKAN INI)
+    |--------------------------------------------------------------------------
+    */
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'pembuat_id');
+    }
+
+    public function city(): BelongsTo
     {
         return $this->belongsTo(Kota::class, 'kota_id');
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
     }
 
-    public function members()
+    public function members(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'anggota_komunitas', 'komunitas_id', 'user_id')
-            ->using('App\\Models\\AnggotaKomunitas')
-            ->withPivot('role', 'joined_at');
+        return $this->belongsToMany(
+            User::class,
+            'anggota_komunitas',
+            'komunitas_id',
+            'user_id'
+        )
+        ->using(AnggotaKomunitas::class)
+        ->withPivot('id', 'role', 'joined_at');
     }
 
-    public function moderators()
+    public function moderators(): BelongsToMany
     {
         return $this->members()->wherePivot('role', 'moderator');
     }
 
-    public function groups()
+    public function groups(): HasMany
     {
-        return $this->hasMany(Grub::class, 'komunitas_id');
+        return $this->hasMany(Grup::class, 'komunitas_id');
     }
 
-    public function internalActivities()
+    public function internalActivities(): HasMany
     {
-        return $this->hasMany(Events::class, 'komunitas_id')->where('type', 'kegiatan');
+        return $this->hasMany(Events::class, 'komunitas_id')
+            ->where('type', 'kegiatan');
     }
 
-    // Aliases for Indonesian relation names used in controllers/views
+    /*
+    |--------------------------------------------------------------------------
+    | ALIAS BAHASA INDONESIA (OPSIONAL, AMAN)
+    |--------------------------------------------------------------------------
+    | Jangan buat logic baru di sini
+    */
+
+    public function pembuat()
+    {
+        return $this->creator();
+    }
+
     public function kota()
     {
         return $this->city();

@@ -27,7 +27,7 @@ class AdminSeeder extends Seeder
         User::create([
             'nama' => 'Admin Pusat',
             'email' => $email,
-            'password' => Hash::make('password'),
+            'password' => Hash::make('admin123'),
             'role' => 'admin',
             'xp_terkini' => 0,
             'level_terkini' => 1,
@@ -35,6 +35,6 @@ class AdminSeeder extends Seeder
             'terpercaya' => true,
         ]);
 
-        $this->command->info("Created admin user: {$email} (password: password)");
+        $this->command->info("Created admin user: {$email} (password: admin123)");
     }
 }

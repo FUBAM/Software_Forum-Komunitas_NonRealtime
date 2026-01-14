@@ -4,80 +4,114 @@ namespace App\Http\Controllers;
 
 use App\Models\Komunitas;
 use App\Models\Events;
-use App\Models\Grub;
+use App\Models\User;
+use App\Models\AnggotaKomunitas;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class KomunitasController extends Controller
 {
-    // Halaman Detail Komunitas
+    /*
+    |--------------------------------------------------------------------------
+    | DETAIL KOMUNITAS
+    |--------------------------------------------------------------------------
+    */
+
     public function show($id)
     {
-        $komunitas = Komunitas::with(['kota', 'kategori', 'grup'])->findOrFail($id);
+        $komunitas = Komunitas::with(['kota', 'kategori'])->findOrFail($id);
 
-        // Cek apakah user sudah join
         $isMember = false;
         if (Auth::check()) {
-            $isMember = $komunitas->anggota()->where('user_id', Auth::id())->exists();
+            $isMember = AnggotaKomunitas::where('komunitas_id', $komunitas->id)
+                ->where('user_id', Auth::id())
+                ->exists();
         }
 
         return view('komunitas.show', compact('komunitas', 'isMember'));
     }
 
-    // Aksi Gabung Komunitas
-    public function join(\Illuminate\Http\Request $request)
-    {
-        $komunitasId = $request->input('komunitas_id');
-        $komunitas = Komunitas::findOrFail($komunitasId);
+    /*
+    |--------------------------------------------------------------------------
+    | GABUNG KOMUNITAS
+    |--------------------------------------------------------------------------
+    */
 
-        // Cegah duplicate attach
+    public function join(Request $request)
+    {
+        $request->validate([
+            'komunitas_id' => 'required|exists:komunitas,id',
+        ]);
+
         $userId = Auth::id();
-        if ($komunitas->anggota()->where('user_id', $userId)->exists()) {
+        if (! $userId) {
+            return redirect('/?login=1');
+        }
+
+        $komunitasId = $request->komunitas_id;
+
+        // Cegah duplicate join
+        $exists = AnggotaKomunitas::where('user_id', $userId)
+            ->where('komunitas_id', $komunitasId)
+            ->exists();
+
+        if ($exists) {
             return back()->with('info', 'Anda sudah menjadi anggota komunitas ini.');
         }
 
-        // Attach user ke komunitas via pivot
-        $komunitas->anggota()->attach($userId, ['role' => 'member']);
+        // Simpan ke pivot
+        AnggotaKomunitas::create([
+            'user_id'      => $userId,
+            'komunitas_id' => $komunitasId,
+            'role'         => 'member',
+        ]);
 
-        // Tambah XP Join
-        /** @var \App\Models\User|null $user */
-        $user = Auth::user();
-        if ($user) {
-            $user->increment('xp_terkini', 20);
-        }
+        // Tambah XP join komunitas (AMAN)
+        User::where('id', $userId)->increment('xp_terkini', 20);
 
-        return back()->with('success', 'Selamat bergabung!');
+        return back()->with('success', 'Selamat bergabung dengan komunitas!');
     }
 
-    // Daftar komunitas
+    /*
+    |--------------------------------------------------------------------------
+    | DAFTAR SEMUA KOMUNITAS
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $komunitas = Komunitas::withCount('members')->get();
+        $komunitas = Komunitas::withCount([
+            'anggota as jumlah_anggota'
+        ])->get();
+
         return view('komunitas.index', compact('komunitas'));
     }
 
-    // Daftar komunitas milik user (dengan pencarian)
+    /*
+    |--------------------------------------------------------------------------
+    | KOMUNITAS SAYA
+    |--------------------------------------------------------------------------
+    */
+
     public function myCommunities(Request $request)
     {
-        $user = Auth::user();
-        if (!$user) {
-            // Redirect guests to landing (or login) — preserve UX
+        $userId = Auth::id();
+        if (! $userId) {
             return redirect('/?login=1');
         }
 
         $q = trim($request->get('q', ''));
-        $query = Komunitas::whereHas('anggota', function ($q2) use ($user) {
-            $q2->where('user_id', $user->id);
+
+        $query = Komunitas::whereHas('anggota', function ($q2) use ($userId) {
+            $q2->where('user_id', $userId);
         });
 
         if ($q !== '') {
-            $tokens = preg_split('/\s+/', $q);
-            foreach ($tokens as $t) {
-                $t = trim($t);
-                if ($t === '') continue;
-                $query->where(function ($qq) use ($t) {
-                    $qq->where('nama', 'like', "%{$t}%")
-                        ->orWhere('deskripsi', 'like', "%{$t}%");
+            foreach (preg_split('/\s+/', $q) as $token) {
+                $query->where(function ($qq) use ($token) {
+                    $qq->where('nama', 'like', "%{$token}%")
+                        ->orWhere('deskripsi', 'like', "%{$token}%");
                 });
             }
         }
@@ -87,33 +121,47 @@ class KomunitasController extends Controller
         return view('komunitas-saya', compact('komunitas', 'q'));
     }
 
-    // Halaman "Grup Events" (Filter Otomatis)
+    /*
+    |--------------------------------------------------------------------------
+    | EVENT KOMUNITAS (INTERNAL + GLOBAL)
+    |--------------------------------------------------------------------------
+    */
+
     public function events($komunitasId)
     {
         $komunitas = Komunitas::findOrFail($komunitasId);
 
-        // 1. Kegiatan Internal (Dibuat moderator sini)
+        // Kegiatan internal komunitas
         $internalEvents = Events::where('type', 'kegiatan')
             ->where('komunitas_id', $komunitasId)
             ->where('status', 'published')
             ->get();
 
-        // 2. Lomba Global (Dibuat admin, kategori sama)
-        $globalContests = Events::where('type', 'lomba')
+        // Lomba global (kategori sama)
+        $globalEvents = Events::where('type', 'lomba')
             ->where('kategori_id', $komunitas->kategori_id)
             ->where('status', 'published')
             ->get();
 
-        // Gabung & Urutkan berdasarkan tanggal
-        $allEvents = $internalEvents->merge($globalContests)->sortBy('start_date');
+        $allEvents = $internalEvents
+            ->merge($globalEvents)
+            ->sortBy('start_date');
 
         return view('komunitas.events', compact('komunitas', 'allEvents'));
     }
 
-    // Admin: list laporan (route admin.laporan)
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN: LAPORAN
+    |--------------------------------------------------------------------------
+    */
+
     public function listLaporan()
     {
-        $laporan = \App\Models\Laporan::where('status', 'pending')->latest()->get();
+        $laporan = Laporan::where('status', 'pending')
+            ->latest()
+            ->get();
+
         return view('admin.laporan', compact('laporan'));
     }
 }

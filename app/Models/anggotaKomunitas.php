@@ -3,24 +3,42 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Komunitas;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AnggotaKomunitas extends Model
 {
     protected $table = 'anggota_komunitas';
 
-    // Karena tabel pivot ini punya ID sendiri (id_anggota), 
-    // kita set incrementing = true.
-    public $incrementing = true;
+    protected $fillable = [
+        'user_id',
+        'komunitas_id',
+        'role',
+        'joined_at',
+    ];
 
-    protected $fillable = ['user_id', 'komunitas_id', 'role', 'joined_at'];
+    protected $casts = [
+        'joined_at' => 'datetime',
+    ];
 
-    // Jika ingin relasi balik ke User/Komunitas dari model pivot ini
-    public function user()
+    /**
+     * Tabel ini TIDAK menggunakan created_at / updated_at
+     */
+    public $timestamps = false;
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function komunitas()
+    public function komunitas(): BelongsTo
     {
         return $this->belongsTo(Komunitas::class, 'komunitas_id');
     }
