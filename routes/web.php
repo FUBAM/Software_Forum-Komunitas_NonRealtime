@@ -25,6 +25,7 @@ use App\Models\User;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/home', [LandingController::class, 'index'])->name('home');
+Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.detail');
 
 /*
 |--------------------------------------------------------------------------
@@ -120,6 +121,7 @@ Route::middleware('auth')->group(function () {
 
     // Berita
     Route::resource('/admin/berita', BeritaController::class);
+
 
     // Laporan
     Route::get('/admin/laporan', [LaporanController::class, 'index'])

@@ -9,8 +9,11 @@ use App\Models\Badge;
 use App\Models\User;
 use App\Models\Berita;
 use App\Models\Komunitas;
+use App\Models\Events;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class MasterSeeder extends Seeder
 {
@@ -61,74 +64,93 @@ class MasterSeeder extends Seeder
         //     'terpercaya' => true,
         // ]);
 
-        // User::factory(50)->create();
-        
-        // 5. ISI DATA KOMUNITAS CONTOH
-        // Menyambungkan ke kota_id 1 (Sleman) dan kategori_id 1 (Teknologi)
-        // komunitas::create([
-        //     'kota_id' => 1,
-        //     'kategori_id' => 1,
-        //     'pembuat_id' => $admin->id,
-        //     'nama' => 'Komunitas IT Sleman',
-        //     'deskripsi' => 'Wadah berbagi ilmu teknologi di area Sleman.',
-        //     'icon_url' => 'communities/it-sleman.png'
-        // ]);
+        // User::factory(10)->create();
+        // Berita::factory()->count(20)->create();  
+        // Komunitas::factory()->count(20)->create();
+        Events::factory()->count(20)->create();
 
+        // $kategori = [
+        //     [
+        //         'nama' => 'Literasi & Penulisan',
+        //         'icon_url' => 'image/icon/literasi.png', // Sesuaikan path icon Anda
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Seni & Desain',
+        //         'icon_url' => 'image/icon/seni.png',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Teknologi & Coding',
+        //         'icon_url' => 'image/icon/teknologi.png',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Gaming & E-Sports',
+        //         'icon_url' => 'image/icon/gaming.png',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Kesehatan Mental',
+        //         'icon_url' => 'image/icon/kesehatan.png',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Gaya Hidup Solo',
+        //         'icon_url' => 'image/icon/solo.png',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Akademik & Sains',
+        //         'icon_url' => 'image/icon/akademik.png',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Pop Culture',
+        //         'icon_url' => 'image/icon/popculture.png',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ];
 
-        $data = [
-            [
-                'judul' => 'Festival Budaya Sleman 2026: Merajut Tradisi di Era Digital',
-                'konten' => 'Kabupaten Sleman kembali menggelar festival budaya tahunan yang kali ini mengusung tema digitalisasi tradisi untuk menarik minat kaum muda introvert agar tetap berpartisipasi dalam pelestarian budaya.',
-                'gambar_url' => 'image/img (1).jpg',
-                'status' => 'published',
-            ],
-            [
-                'judul' => 'Workshop Coding Jogja: Membangun Karir Backend dari Rumah',
-                'konten' => 'Komunitas IT Yogyakarta menyelenggarakan workshop khusus bagi para pengembang backend. Acara ini dirancang nyaman bagi introvert dengan metode komunikasi berbasis teks selama sesi berlangsung.',
-                'gambar_url' => 'image/img (2).jpg',
-                'status' => 'published',
-            ],
-            [
-                'judul' => 'Turnamen E-sports Bantul: Ruang Kompetisi Aman Tanpa Tekanan Sosial',
-                'konten' => 'ZHIB Community menghadirkan kompetisi e-sports regional Bantul. Fokus utama adalah memberikan ruang bagi gamer yang ingin berkompetisi tanpa harus merasa tertekan oleh interaksi sosial yang berlebihan.',
-                'gambar_url' => 'image/img (3).jpg',
-                'status' => 'published',
-            ],
-            [
-                'judul' => 'Tips Menemukan Komunitas yang Tepat bagi Introvert di Yogyakarta',
-                'konten' => 'Menjadi introvert bukan berarti tidak bisa berkomunitas. Simak panduan mencari lingkaran pertemanan yang sesuai dengan kapasitas energi sosial Anda melalui fitur ZHIB.',
-                'gambar_url' => 'image/img (4).jpg',
-                'status' => 'published',
-            ],
-            [
-                'judul' => 'Pameran Seni Kulon Progo: Keindahan dalam Kesunyian',
-                'konten' => 'Pameran seni rupa di Kulon Progo ini menawarkan konsep galeri yang tenang, sangat cocok bagi Anda yang ingin menikmati karya seni tanpa hiruk-pikuk keramaian.',
-                'gambar_url' => 'image/img (5).jpg',
-                'status' => 'draft',
-            ],
-            [
-                'judul' => 'Gathering Komunitas Literasi Gunungkidul di Pantai Wediombo',
-                'konten' => 'Membaca bersama sambil menikmati deburan ombak. Gathering kali ini berfokus pada diskusi santai dan apresiasi karya tulis anggota komunitas lokal DIY.',
-                'gambar_url' => 'image/img (6).jpg',
-                'status' => 'published',
-            ],
-            [
-                'judul' => 'Update Fitur ZHIB v1.0: Sistem Gamifikasi Kini Lebih Menantang',
-                'konten' => 'Kami memperbarui sistem XP dan Trust Score. Sekarang, berpartisipasi dalam event akan memberikan badge unik yang bisa ditampilkan di profil Hall of Fame Anda.',
-                'gambar_url' => 'image/img (7).jpg',
-                'status' => 'published',
-            ],
-        ];
+        // DB::table('kategori')->insert($kategori);
 
-        foreach ($data as $item) {
-            Berita::create([
-                'user_id' => 1, // Semuanya di-assign ke Admin (ID 1)
-                'judul' => $item['judul'],
-                'slug' => Str::slug($item['judul']),
-                'konten' => $item['konten'],
-                'gambar_url' => $item['gambar_url'], // Mengarah ke public/image/ sesuai struktur aset Anda
-                'status' => $item['status'],
-            ]);
-        }
+        // $kota = [
+        //     [
+        //         'nama' => 'Kota Yogyakarta',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Kabupaten Sleman',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Kabupaten Bantul',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Kabupaten Kulon Progo',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'nama' => 'Kabupaten Gunungkidul',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ];
+
+        // DB::table('kota')->insert($kota);
+
     }
 }

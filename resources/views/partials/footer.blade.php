@@ -7,8 +7,8 @@
 
             <div class="footer-social">
                 <a href="#" class="social-link" aria-label="Instagram">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                         <path d="M16 11.37A4 4 0 1 1 12.63 8
                                  4 4 0 0 1 16 11.37z"></path>
@@ -39,38 +39,38 @@
         {{-- KOMUNITAS --}}
         <div class="footer-section">
             @guest
-                <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
-                    Komunitas Saya
-                </a>
-                <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
-                    Cari Komunitas
-                </a>
+            <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
+                Komunitas Saya
+            </a>
+            <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
+                Cari Komunitas
+            </a>
             @else
-                <a href="{{ route('komunitas.my') }}" class="footer-text-link">
-                    Komunitas Saya
-                </a>
-                <a href="{{ route('komunitas.index') }}" class="footer-text-link">
-                    Cari Komunitas
-                </a>
+            <a href="{{ route('komunitas.my') }}" class="footer-text-link">
+                Komunitas Saya
+            </a>
+            <a href="{{ route('komunitas.index') }}" class="footer-text-link">
+                Cari Komunitas
+            </a>
             @endguest
         </div>
 
         {{-- EVENT --}}
         <div class="footer-section">
             @guest
-                <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
-                    Riwayat Event
-                </a>
-                <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
-                    Cari Event
-                </a>
+            <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
+                Riwayat Event
+            </a>
+            <a href="#" class="footer-text-link" onclick="openLogin(); return false;">
+                Cari Event
+            </a>
             @else
-                <a href="{{ route('events.riwayat') }}" class="footer-text-link">
-                    Riwayat Event
-                </a>
-                <a href="{{ route('events.index') }}" class="footer-text-link">
-                    Cari Event
-                </a>
+            <a href="{{ route('events.riwayat') }}" class="footer-text-link">
+                Riwayat Event
+            </a>
+            <a href="{{ route('events.index') }}" class="footer-text-link">
+                Cari Event
+            </a>
             @endguest
         </div>
 
@@ -81,9 +81,5 @@
             </a>
         </div>
 
-    </div>
-
-    <div class="footer-bottom">
-        <p>© {{ date('Y') }} ZHIB Community Platform. All rights reserved.</p>
     </div>
 </footer>

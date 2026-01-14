@@ -13,10 +13,6 @@
     {{-- Global Header Styles --}}
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/berita.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/events.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/hall-of-fame.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
 
     {{-- Page Specific Styles --}}
     @stack('styles')
@@ -37,20 +33,21 @@
 
     {{-- AUTH POPUP (GLOBAL, REUSABLE) --}}
     @guest
-        @include('auth.login-form')
-        @include('auth.register-form')
+    @include('auth.login-form')
+    @include('auth.register-form')
     @endguest
 
     {{-- Global Scripts --}}
     <script>
-        // Global helper (future-safe)
-        window.appConfig = {
-            csrfToken: document.querySelector('meta[name="csrf-token"]').content
-        };
+    // Global helper (future-safe)
+    window.appConfig = {
+        csrfToken: document.querySelector('meta[name="csrf-token"]').content
+    };
     </script>
 
     {{-- Page Specific Scripts --}}
     @stack('scripts')
 
 </body>
+
 </html>

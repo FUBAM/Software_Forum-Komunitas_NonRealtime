@@ -10,29 +10,21 @@
 
         <div class="event-carousel-wrapper">
 
-            {{-- Button Left --}}
-            <button class="carousel-btn left" aria-label="Geser kiri"
-                onclick="scrollEventCarousel(-1)">
-                ‹
-            </button>
-
             {{-- Carousel --}}
             <div class="event-carousel" id="eventCarousel">
 
                 @forelse ($events as $event)
-                    <div class="event-card">
+                <div class="event-card">
 
-                        @guest
-                            <a href="#" onclick="openLogin(); return false;" class="event-link">
+                    @guest
+                    <a href="#" onclick="openLogin(); return false;" class="event-link">
                         @else
-                            <a href="{{ route('events.show', $event->id) }}" class="event-link">
-                        @endguest
+                        <a href="{{ route('events.show', $event->id) }}" class="event-link">
+                            @endguest
 
                             <div class="event-poster">
-                                <img
-                                    src="{{ asset($event->poster ?? 'image/event/default.jpg') }}"
-                                    alt="{{ $event->judul }}"
-                                >
+                                <img src="{{ asset($event->poster ?? 'image/event/default.jpg') }}"
+                                    alt="{{ $event->judul }}">
                             </div>
 
                             <div class="event-info">
@@ -46,36 +38,32 @@
                                 </p>
 
                                 @if(!empty($event->harga))
-                                    <div class="event-price">
-                                        Rp {{ number_format($event->harga, 0, ',', '.') }}
-                                    </div>
+                                <div class="event-price">
+                                    Rp {{ number_format($event->harga, 0, ',', '.') }}
+                                </div>
                                 @endif
                             </div>
 
                         </a>
-                    </div>
+                </div>
                 @empty
-                    {{-- Placeholder jika belum ada event --}}
-                    @for ($i = 0; $i < 6; $i++)
-                        <div class="event-card placeholder">
-                            <div class="event-poster skeleton"></div>
-                            <div class="event-info">
-                                <div class="skeleton title"></div>
-                                <div class="skeleton text"></div>
-                            </div>
-                        </div>
-                    @endfor
-                @endforelse
-
+                {{-- Placeholder jika belum ada event --}}
+                @for ($i = 0; $i < 6; $i++) <div class="event-card placeholder">
+                    <div class="event-poster skeleton"></div>
+                    <div class="event-info">
+                        <div class="skeleton title"></div>
+                        <div class="skeleton text"></div>
+                    </div>
             </div>
-
-            {{-- Button Right --}}
-            <button class="carousel-btn right" aria-label="Geser kanan"
-                onclick="scrollEventCarousel(1)">
-                ›
-            </button>
+            @endfor
+            @endforelse
 
         </div>
+
+        {{-- Button Right --}}
+
+
+    </div>
 
     </div>
 </section>

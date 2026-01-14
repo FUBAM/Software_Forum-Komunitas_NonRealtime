@@ -18,7 +18,7 @@ class LandingController extends Controller
         */
         $hallOfFame = User::where('role', 'member')
             ->orderByDesc('xp_terkini')
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         /*
@@ -30,7 +30,7 @@ class LandingController extends Controller
         $events = Events::where('type', 'lomba')
             ->where('status', 'published')
             ->orderByDesc('created_at')
-            ->limit(8)
+            ->limit(5)
             ->get();
 
         /*

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property-read \App\Models\User $pengusul
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Events extends Model
 {
+    use HasFactory;
     protected $table = 'events';
 
     protected $fillable = [
