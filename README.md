@@ -1,59 +1,181 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📘 ZHIB Community Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**ZHIB Community Platform** adalah ekosistem komunitas digital berbasis web yang berfokus di wilayah **Daerah Istimewa Yogyakarta (DIY)**. Platform ini dibangun dengan tujuan utama untuk **mempertemukan orang-orang yang memiliki minat dan hobi yang sama** agar dapat berinteraksi, berkolaborasi, dan berkompetisi dalam lingkungan yang positif.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🎯 Latar Belakang & Masalah
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Pembuatan website ini didasari oleh realitas sosial di mana:
+* **Masalah:** Banyak orang merasa kesulitan menemukan teman atau lingkungan baru yang memiliki hobi ("sehobi") di sekitar mereka.
+* **Solusi:** ZHIB hadir sebagai jembatan digital untuk menghubungkan individu dengan komunitas yang relevan, memudahkan mereka menyalurkan hobi melalui kegiatan komunitas dan lomba.
+* **Target Audiens:** **Semua orang** (inklusif). Siapa saja yang ingin mencari teman baru, mengembangkan hobi, atau mencari event seru di Jogja dan sekitarnya.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Project ini dibangun menggunakan arsitektur Monolith:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* **Backend Framework:** Laravel 11
+* **Database:** MySQL
+* **Frontend:** Blade Templating
+* **Styling:** **Native CSS** (Tanpa Framework CSS seperti Tailwind/Bootstrap)
+* **Asset Management:**
+    * CSS per halaman disimpan di `public/css/`
+    * Gambar/Aset disimpan di `public/image/`
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 👥 Sistem Role & Hak Akses
 
-### Premium Partners
+Sistem ini memiliki aturan hak akses yang spesifik:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1.  **Global Roles (Tabel `users`)**:
+    * **Admin:** Memiliki akses penuh ke panel kendali, verifikasi pembayaran, dan manajemen konten.
+    * **Member:** Pengguna umum yang mencari komunitas dan event.
 
-## Contributing
+2.  **Lokal Role (Tabel Pivot `anggota_komunitas`)**:
+    * **Moderator:** Status ini **BUKAN** role global. Seorang `member` bisa diangkat menjadi moderator hanya untuk **satu komunitas spesifik**.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🚀 Panduan Instalasi & Setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Ikuti langkah ini agar tampilan Frontend dan logika Backend terhubung dengan benar:
 
-## Security Vulnerabilities
+1.  **Clone Repository & Install Dependencies**
+    ```bash
+    git clone [https://github.com/username/zhib-platform.git](https://github.com/username/zhib-platform.git)
+    cd zhib-platform
+    composer install
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2.  **Konfigurasi Environment**
+    * Salin `.env.example` menjadi `.env`
+    * Atur koneksi database (DB_DATABASE, DB_USERNAME, dll).
 
-## License
+3.  **Generate Key & Migrasi**
+    ```bash
+    php artisan key:generate
+    php artisan migrate
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+4.  **Seeding Data (Wajib)**
+    Jalankan seeder agar halaman berita dan kategori tidak kosong.
+    ```bash
+    php artisan db:seed --class=BeritaSeeder
+    ```
+
+5.  **Jalankan Server**
+    ```bash
+    php artisan serve
+    ```
+
+---
+
+## 🛡️ Panduan Fitur Admin (Admin Panel)
+
+Pusat kendali untuk pengelolaan ekosistem ZHIB. Akses via `/admin/dashboard`.
+
+### 1. Dashboard & Monitoring
+* **Statistik Real-time:** Memantau pertumbuhan member, event aktif, dan pembayaran masuk.
+* **Notifikasi:** Alert untuk pembayaran baru atau laporan pelanggaran.
+
+### 2. Manajemen Pembayaran (Keuangan)
+Sistem verifikasi manual untuk Lomba Berbayar.
+* **Lihat Bukti:** Admin memeriksa bukti transfer via popup modal.
+* **Aksi:**
+    * ✅ **Approve:** User resmi terdaftar sebagai peserta.
+    * ❌ **Reject:** Pembayaran ditolak (wajib input alasan).
+
+### 3. Manajemen Lomba (Global Events)
+* **Fungsi:** Membuat kompetisi skala besar yang terbuka untuk umum.
+* **Fitur:** CRUD Lomba, Monitoring peserta, dan Rekap Pemenang.
+
+### 4. Manajemen Komunitas
+* **Moderasi:** Admin memantau aktivitas komunitas.
+* **Penugasan Moderator:** Admin menunjuk member untuk menjadi pengelola (moderator) komunitas.
+
+### 5. Laporan & Trust Score
+* **Sistem:** Menangani laporan penyalahgunaan platform.
+* **Sanksi:** Laporan valid akan menurunkan **Trust Score** user terkait.
+
+---
+
+## 👤 Panduan Fitur Member (User)
+
+Fitur untuk pengguna umum yang ingin menyalurkan hobi.
+
+### 1. Eksplorasi & Join Komunitas
+* **Cari Teman Sehobi:** User mencari komunitas berdasarkan lokasi (Sleman, Bantul, dll) atau kategori minat.
+* **Reward:** Bergabung dengan komunitas memberikan **+20 XP**.
+
+### 2. Gamifikasi Profil
+* **XP & Level:** Semakin aktif user (ikut event, gabung komunitas), semakin tinggi Level dan XP mereka.
+* **Hall of Fame:** Menampilkan Top 10 User paling aktif di Landing Page.
+
+### 3. Event & Kegiatan
+* **Lomba:** Kompetisi skala besar buatan Admin (Bisa berbayar).
+* **Kegiatan:** Acara gathering/internal buatan Komunitas (Wajib join komunitas dulu).
+* **Klaim XP:** User mendapat tambahan XP setelah menyelesaikan event.
+
+### 4. Chat Komunitas
+* **Grup Diskusi:** Wadah komunikasi antar anggota komunitas untuk membahas hobi yang sama.
+
+---
+
+## 🛡️ Panduan Fitur Moderator
+
+Fitur ini hanya muncul di dashboard komunitas bagi user yang ditunjuk sebagai moderator.
+
+### 1. Manajemen Anggota & Chat
+Moderator bertanggung jawab menjaga kenyamanan interaksi di grup.
+* **Kick Member:** Moderator dapat mengeluarkan anggota yang mengganggu/toxic dari komunitas.
+* **Pin Chat:** Moderator dapat menyematkan pesan penting (pengumuman/aturan) agar selalu muncul di atas chat.
+* **Moderasi Grup:** Mengirim info di grup *Read-Only*.
+
+### 2. Kelola Kegiatan Internal
+Moderator membuat "Kegiatan" (Kopdar, Workshop, Latihan Bareng) khusus untuk anggota komunitasnya.
+
+---
+
+## ⚙️ Panduan Developer (Backend 🤝 Frontend)
+
+Aturan kolaborasi untuk menghubungkan Blade ke Controller:
+
+1.  **Hapus Mock Data:**
+    Hapus blok kode dummy `@php $data = [...] @endphp` di file Blade. Biarkan data mengalir dari Controller.
+
+2.  **Variable Injection:**
+    Gunakan sintaks Blade `{{ $variabel }}` untuk menampilkan data dinamis.
+    * *Benar:* `<h4>{{ $komunitas->nama }}</h4>`
+
+3.  **Jangan Ubah Class CSS:**
+    Biarkan nama `class` dan struktur HTML tetap sama agar desain tidak rusak.
+
+4.  **Struktur Folder View:**
+    * `resources/views/admin/` -> Panel Admin
+    * `resources/views/dashboard/member/` -> Home User
+    * `resources/views/komunitas/` -> List & Detail Komunitas
+    * `resources/views/events/` -> List & Form Pendaftaran
+    * `resources/views/auth/` -> Popup Login/Register
+
+---
+
+## 👨‍💻 Tim Pengembang
+
+Proyek ini dikembangkan oleh mahasiswa **Sistem Informasi** sebagai bagian dari tugas kuliah:
+
+* **Ihsan Zufar Adyatma** – *UI/UX Designer*
+    * Perancangan User Interface & User Experience.
+* **Habib Farhan** – *Frontend Developer*
+    * Implementasi Slicing Design, Blade Templating, dan Native CSS.
+* **Muhammad Basiru F. A. Ugar** – *Backend Developer*
+    * Database Architecture, API Logic, dan Keamanan Sistem.
+* **Afrizal Ibnu Aziz** – *Backend Developer*
+    * Integrasi Sistem, Controller Logic, dan Manajemen Server.
+
+---
+
+**ZHIB Community Platform © 2026**
