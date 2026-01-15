@@ -27,7 +27,7 @@ class PembayaranController extends Controller
             ->where('status', 'published')
             ->findOrFail($eventId);
 
-        return view('pembayaran.create', compact('event'));
+        return view('events.payment', compact('event'));
     }
 
     /*

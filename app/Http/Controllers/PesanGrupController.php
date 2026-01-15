@@ -23,10 +23,10 @@ class PesanGrupController extends Controller
             return redirect('/?login=1');
         }
 
-        $grup = Grup::with(['komunitas', 'pesanGrup.user'])
-            ->findOrFail($grupId);
+        // 1. Ambil Data Grup
+        $grup = Grup::with('komunitas')->findOrFail($grupId);
 
-        // Cek apakah user anggota komunitas
+        // 2. Cek Member
         $isMember = AnggotaKomunitas::where('user_id', $user->id)
             ->where('komunitas_id', $grup->komunitas_id)
             ->exists();
@@ -37,7 +37,15 @@ class PesanGrupController extends Controller
                 ->with('error', 'Anda harus bergabung dengan komunitas terlebih dahulu.');
         }
 
-        return view('grup.chat', compact('grup'));
+        // 3. 🔥 AMBIL DATA PESAN (Ini yang kurang sebelumnya) 🔥
+        $messages = PesanGrup::with('user')
+            ->where('grup_id', $grupId)
+            ->orderBy('created_at', 'asc') // Urutkan dari lama ke baru
+            ->get();
+
+        // 4. Kirim $grup dan $messages ke View
+        // Pastikan file view ada di: resources/views/komunitas/chat.blade.php
+        return view('komunitas.chat', compact('grup', 'messages'));
     }
 
     /*

@@ -7,6 +7,8 @@ use App\Models\Events;
 use App\Models\User;
 use App\Models\AnggotaKomunitas;
 use App\Models\Laporan;
+use App\Models\Kota;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -81,11 +83,28 @@ class KomunitasController extends Controller
 
     public function index()
     {
-        $komunitas = Komunitas::withCount([
-            'anggota as jumlah_anggota'
-        ])->get();
+        // 1. Ambil data untuk Filter
+        $kota_list = Kota::all();
+        $kategori_list = Kategori::all();
 
-        return view('komunitas.index', compact('komunitas'));
+        // 2. Mulai Query
+        $query = Komunitas::withCount(['anggota as jumlah_anggota'])
+            ->with(['kota', 'kategori']);
+
+        // 3. 🔥 LOGIKA BARU: Sembunyikan komunitas yang user SUDAH join 🔥
+        if (Auth::check()) {
+            $userId = Auth::id();
+            
+            // "Ambil komunitas yang TIDAK PUNYA relasi anggota dengan user_id ini"
+            $query->whereDoesntHave('anggota', function($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        }
+
+        // 4. Eksekusi
+        $komunitas = $query->get();
+
+        return view('komunitas.cari-komunitas', compact('komunitas', 'kota_list', 'kategori_list'));
     }
 
     /*
@@ -103,7 +122,9 @@ class KomunitasController extends Controller
 
         $q = trim($request->get('q', ''));
 
-        $query = Komunitas::whereHas('anggota', function ($q2) use ($userId) {
+        // 🔥 TAMBAHKAN with('grup') DI SINI 🔥
+        // Agar kita bisa mengambil ID grup untuk link tombol chat
+        $query = Komunitas::with('grup')->whereHas('anggota', function ($q2) use ($userId) {
             $q2->where('user_id', $userId);
         });
 
@@ -118,7 +139,7 @@ class KomunitasController extends Controller
 
         $komunitas = $query->get();
 
-        return view('komunitas-saya', compact('komunitas', 'q'));
+        return view('komunitas.komunitas-saya', compact('komunitas', 'q'));
     }
 
     /*
@@ -129,25 +150,24 @@ class KomunitasController extends Controller
 
     public function events($komunitasId)
     {
-        $komunitas = Komunitas::findOrFail($komunitasId);
+        $komunitas = Komunitas::with('grup')->findOrFail($komunitasId);
 
-        // Kegiatan internal komunitas
-        $internalEvents = Events::where('type', 'kegiatan')
+        // 1. Ambil Kegiatan (Khusus Internal Komunitas)
+        $kegiatan = Events::where('type', 'kegiatan')
             ->where('komunitas_id', $komunitasId)
             ->where('status', 'published')
+            ->orderBy('start_date', 'asc')
             ->get();
 
-        // Lomba global (kategori sama)
-        $globalEvents = Events::where('type', 'lomba')
+        // 2. Ambil Lomba (Global/Rekomendasi sesuai kategori komunitas)
+        $lomba = Events::where('type', 'lomba')
             ->where('kategori_id', $komunitas->kategori_id)
             ->where('status', 'published')
+            ->orderBy('start_date', 'asc')
             ->get();
 
-        $allEvents = $internalEvents
-            ->merge($globalEvents)
-            ->sortBy('start_date');
-
-        return view('komunitas.events', compact('komunitas', 'allEvents'));
+        // Kirim variabel terpisah agar mudah diloop di view
+        return view('komunitas.grup-event', compact('komunitas', 'kegiatan', 'lomba'));
     }
 
     /*

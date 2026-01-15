@@ -8,6 +8,8 @@ use App\Models\Pembayaran;
 use App\Models\Komunitas;
 use App\Models\Laporan;
 use App\Models\AnggotaKomunitas;
+use App\Models\Grup;
+use App\Models\PesanGrup;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -63,25 +65,31 @@ class DashboardController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | DASHBOARD MODERATOR KOMUNITAS
+    | HELPER: CEK AKSES MODERATOR
     |--------------------------------------------------------------------------
     */
-
-    public function moderatorIndex($komunitasId)
+    private function checkAccess($komunitasId)
     {
         $user = Auth::user();
-        if (! $user) {
-            abort(403);
-        }
-
         $isModerator = AnggotaKomunitas::where('user_id', $user->id)
             ->where('komunitas_id', $komunitasId)
             ->where('role', 'moderator')
             ->exists();
 
-        if (! $isModerator) {
-            abort(403, 'Akses ditolak. Anda bukan moderator komunitas ini.');
+        if (!$isModerator && $user->role !== 'admin') {
+            abort(403, 'Akses Ditolak. Anda bukan moderator komunitas ini.');
         }
+        return $user;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD MODERATOR (HOME)
+    |--------------------------------------------------------------------------
+    */
+    public function moderatorIndex($komunitasId)
+    {
+        $this->checkAccess($komunitasId); // Pakai helper biar ringkas
 
         $komunitas = Komunitas::withCount('anggota')->findOrFail($komunitasId);
 
@@ -90,9 +98,53 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        return view('dashboard.moderator.index', compact(
-            'komunitas',
-            'kegiatan_internal'
-        ));
+        return view('dashboard.moderator.index', compact('komunitas', 'kegiatan_internal'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MODERATOR: CHAT
+    |--------------------------------------------------------------------------
+    */
+    public function moderatorChat($komunitasId)
+    {
+        $this->checkAccess($komunitasId);
+        
+        $komunitas = Komunitas::with('grup')->findOrFail($komunitasId);
+        $grup = $komunitas->grup->first();
+        
+        if(!$grup) return back()->with('error', 'Grup chat belum dibuat.');
+
+        $messages = PesanGrup::with('user')
+            ->where('grup_id', $grup->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // View tetap menggunakan folder moderator
+        return view('moderator.chat', compact('komunitas', 'grup', 'messages'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MODERATOR: EVENTS
+    |--------------------------------------------------------------------------
+    */
+    public function moderatorEvents($komunitasId)
+    {
+        $this->checkAccess($komunitasId);
+        
+        $komunitas = Komunitas::findOrFail($komunitasId);
+
+        $kegiatan = Events::where('komunitas_id', $komunitasId)
+            ->where('type', 'kegiatan')
+            ->orderBy('start_date', 'asc')
+            ->get();
+            
+        $lomba = Events::where('type', 'lomba')
+            ->where('kategori_id', $komunitas->kategori_id)
+            ->orderBy('start_date', 'asc')
+            ->get();
+
+        return view('moderator.events', compact('komunitas', 'kegiatan', 'lomba'));
     }
 }

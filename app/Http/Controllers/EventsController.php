@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Events;
+use App\Models\Kota;
 use App\Models\Kategori;
 use App\Models\PesertaKegiatan;
 use App\Models\User;
@@ -20,13 +21,32 @@ class EventsController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index()
+    public function index(Request $request)
     {
-        $events = Events::where('status', 'published')
-            ->orderBy('start_date', 'asc')
-            ->get();
+        // 1. Ambil Data Master untuk Filter (Dropdown/Checkbox)
+        $kategori_list = Kategori::all();
+        $kota_list = Kota::all();
 
-        return view('events.index', compact('events'));
+        // 2. Query Dasar: Hanya yang Published & Tipe Lomba
+        $query = Events::with(['kategori', 'kota']) // Eager load relasi
+            ->where('status', 'published')
+            ->where('type', 'lomba'); // SYARAT WAJIB: Hanya Lomba
+
+        // 3. Logika Filter Kategori (Jika ada yang dicentang)
+        if ($request->has('kategori') && !empty($request->kategori)) {
+            $query->whereIn('kategori_id', $request->kategori);
+        }
+
+        // 4. Logika Filter Wilayah/Kota (Jika ada yang dipilih)
+        if ($request->has('kota') && !empty($request->kota)) {
+            // Asumsi: Tabel events punya kolom 'kota_id'
+            $query->whereIn('kota_id', $request->kota);
+        }
+
+        // 5. Eksekusi Query
+        $events = $query->orderBy('start_date', 'asc')->get();
+
+        return view('events.event', compact('events', 'kategori_list', 'kota_list'));
     }
 
     /*
@@ -41,45 +61,148 @@ class EventsController extends Controller
             ->where('status', 'published')
             ->findOrFail($id);
 
-        return view('events.show', compact('event'));
+        return view('events.detail-lomba', compact('event'));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | KLAIM XP (SETELAH EVENT SELESAI)
+    | KLAIM XP & UPLOAD BUKTI
     |--------------------------------------------------------------------------
     */
-
-    public function klaimXP($id)
+    public function klaimXP(Request $request, $id)
     {
         $user = Auth::user();
-        if (! $user) {
-            return redirect('/?login=1');
+        $event = Events::findOrFail($id);
+
+        // 1. Cek apakah event sudah selesai
+        // Asumsi: Event dianggap selesai jika waktu sekarang > start_date
+        // Atau jika Anda punya kolom 'end_date', gunakan itu.
+        if (now() < $event->start_date) {
+            return back()->with('error', 'Event belum dimulai/selesai.');
         }
 
-        $event = Events::where('status', 'finished')->findOrFail($id);
-
+        // 2. Cari data kepesertaan
         $peserta = PesertaKegiatan::where('user_id', $user->id)
             ->where('events_id', $event->id)
             ->first();
 
-        if (! $peserta) {
-            return back()->with('error', 'Anda bukan peserta event ini.');
+        if (!$peserta) {
+            return back()->with('error', 'Anda belum terdaftar di event ini.');
         }
 
-        // Cegah klaim berulang
-        if ($peserta->status === 'kehadiran' || $peserta->status === 'pemenang') {
-            return back()->with('error', 'XP sudah diklaim.');
+        // 3. Cek apakah sudah pernah klaim (Status tidak null)
+        if ($peserta->status !== null) {
+            return back()->with('error', 'Anda sudah mengklaim XP untuk event ini.');
         }
 
-        // Update status kehadiran
-        $peserta->status = 'kehadiran';
+        // 4. LOGIKA XP
+        $xpGained = 0;
+        $pesan = '';
+
+        // Validasi input foto (opsional)
+        $request->validate([
+            'bukti_foto' => 'nullable|image|max:2048',
+            'review'     => 'nullable|string|max:500'
+        ]);
+
+        // SKENARIO A: Upload Bukti (XP BESAR)
+        if ($request->hasFile('bukti_foto')) {
+            $path = $request->file('bukti_foto')->store('public/bukti_event');
+            $peserta->bukti_url = str_replace('public/', 'storage/', $path);
+            
+            $xpGained = 50; // XP Besar
+            $pesan = "Bukti diterima! Anda dapat +$xpGained XP.";
+        } 
+        // SKENARIO B: Tanpa Bukti (XP KECIL)
+        else {
+            $xpGained = 10; // XP Kecil
+            $pesan = "Kehadiran tercatat. Anda dapat +$xpGained XP.";
+        }
+
+        // 5. Simpan Data
+        $peserta->status = 'hadir'; // Set otomatis jadi hadir
+        $peserta->review_text = $request->review;
         $peserta->save();
 
-        User::where('id', $user->id)->increment('xp_terkini', 10);
+        // 6. Tambah XP ke User & Update Level
+        $user->tambahXP($xpGained);
 
+        return back()->with('success', $pesan);
+    }
 
-        return back()->with('success', 'XP berhasil diklaim.');
+    /*
+    |--------------------------------------------------------------------------
+    | FORM PENDAFTARAN LOMBA (STEP 1 SEBELUM BAYAR)
+    |--------------------------------------------------------------------------
+    */
+    public function showRegisterForm($id)
+    {
+        $event = Events::where('status', 'published')->findOrFail($id);
+        
+        // Cek apakah user sudah terdaftar
+        $exists = PesertaKegiatan::where('user_id', Auth::id())
+            ->where('events_id', $id)
+            ->exists();
+
+        if ($exists) {
+            return redirect()->route('events.show', $id)
+                ->with('error', 'Anda sudah terdaftar di event ini.');
+        }
+
+        return view('events.form-lomba', compact('event'));
+    }
+
+    public function storeRegistration(Request $request, $id)
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'no_wa'     => 'required|string|max:20',
+            'nickname'  => 'nullable|string|max:50',
+            'game_id'   => 'nullable|string|max:50',
+        ]);
+
+        $event = Events::findOrFail($id);
+        $user = Auth::user();
+
+        // 2. CEK APAKAH GRATIS ATAU BERBAYAR?
+        if (!$event->berbayar) {
+            
+            // SKENARIO GRATIS: Langsung Daftarkan Peserta
+            
+            // Cek duplikasi dulu biar aman
+            $exists = PesertaKegiatan::where('user_id', $user->id)
+                ->where('events_id', $id)
+                ->exists();
+
+            if (!$exists) {
+                PesertaKegiatan::create([
+                    'user_id'   => $user->id,
+                    'events_id' => $id,
+                    'status'    => null, // Status null artinya belum hadir/klaim
+                    // Simpan data tambahan jika perlu (misal di kolom lain/tabel lain)
+                ]);
+            }
+
+            return redirect()->route('events.show', $id)
+                ->with('success', 'Pendaftaran berhasil! Anda telah terdaftar di event ini.');
+
+        } else {
+
+            // SKENARIO BERBAYAR: Redirect ke Halaman Upload Bukti
+            
+            // Simpan data sementara di session untuk dipakai nanti (opsional)
+            session([
+                'temp_registration_data' => [
+                    'user_id'   => $user->id,
+                    'event_id'  => $id,
+                    'no_wa'     => $request->no_wa,
+                    'nickname'  => $request->nickname,
+                    'game_id'   => $request->game_id,
+                ]
+            ]);
+
+            return redirect()->route('pembayaran.create', $id);
+        }
     }
 
     /*
@@ -196,7 +319,7 @@ class EventsController extends Controller
             ->orderBy('start_date', 'desc')
             ->get();
 
-        return view('events.riwayat', compact('upcomingEvents', 'pastEvents'));
+        return view('events.riwayat-event', compact('upcomingEvents', 'pastEvents'));
     }
 
 

@@ -68,13 +68,16 @@ Route::middleware('auth')->group(function () {
 | EVENTS
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () {
 
     Route::get('/events', [EventsController::class, 'index'])->name('events.index');
     Route::get('/events/riwayat', [EventsController::class, 'riwayat'])->name('events.riwayat');
     Route::get('/events/{id}', [EventsController::class, 'show'])->name('events.show');
     Route::post('/events/{id}/klaim', [EventsController::class, 'klaimXP'])->name('events.klaim');
+
+    // 🔥 TAMBAHAN BARU: Route Form Pendaftaran & Proses Daftar 🔥
+    Route::get('/events/{id}/daftar', [EventsController::class, 'showRegisterForm'])->name('events.register');
+    Route::post('/events/{id}/daftar', [EventsController::class, 'storeRegistration'])->name('events.storeRegistration');
 
 });
 
@@ -163,3 +166,23 @@ Route::put('/profile', [ProfileController::class, 'update'])->name('profile.upda
 
 Route::view('/tentang_kami', 'tentang_kami');
 Route::view('/reset-password', 'reset-password');
+
+/*
+|--------------------------------------------------------------------------
+| MODERATOR ROUTES (MENGGUNAKAN DASHBOARD CONTROLLER)
+|--------------------------------------------------------------------------
+*/
+
+// Grouping route tetap sama agar tidak perlu ubah view blade
+Route::middleware(['auth'])->prefix('moderator/komunitas/{id}')->name('moderator.')->group(function () {
+    
+    // Dashboard Utama Moderator
+    Route::get('/dashboard', [DashboardController::class, 'moderatorIndex'])->name('index'); 
+    
+    // Chat Moderator (Sekarang pakai DashboardController)
+    Route::get('/chat', [DashboardController::class, 'moderatorChat'])->name('chat');
+    
+    // Events Moderator (Sekarang pakai DashboardController)
+    Route::get('/events', [DashboardController::class, 'moderatorEvents'])->name('events');
+
+});

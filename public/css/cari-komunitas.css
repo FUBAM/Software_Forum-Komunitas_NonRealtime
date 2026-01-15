@@ -28,7 +28,7 @@
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  color: #000;
+  color: #000000;
   padding: 10px 15px;
   border-radius: 8px;
   transition: background 0.2s;
@@ -148,9 +148,10 @@
   min-width: 120px;
 }
 
+
 .btn-join {
-  background: #fff0f0;
-  color: #ff2d2d;
+  background: #000000;
+  color: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 6px;
@@ -162,8 +163,8 @@
 }
 
 .btn-join:hover {
-  background: #ff2d2d;
-  color: #fff;
+  background: #808080;
+  color: #ffffff;
 }
 
 /* ================= MODAL / POPUP STYLE ================= */

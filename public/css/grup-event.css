@@ -6,8 +6,8 @@ body {
   color: #333;
 }
 
-/* --- HEADER STYLE (Sama dengan Chat) --- */
-.event-header {
+/* --- 1. HEADER STYLE --- */
+.chat-header {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 70px;
@@ -17,25 +17,35 @@ body {
   justify-content: space-between;
   padding: 0 40px;
   z-index: 100;
-  border-bottom: 1px solid #eee; /* Sedikit border biar tegas */
+  /* Tidak pakai shadow agar flat sesuai desain, tapi bisa ditambah border bawah tipis jika mau */
 }
 
-.header-left { display: flex; gap: 30px; }
+.header-left {
+  display: flex;
+  gap: 30px;
+}
+
 .header-link {
   text-decoration: none;
   font-size: 16px;
   font-weight: 600;
   color: #999;
 }
-.header-link.active { color: #000; font-weight: 800; }
+
+.header-link.active {
+  color: #000; /* Hitam pekat untuk menu aktif */
+}
 
 .header-center h1 {
   font-size: 18px;
   font-weight: 800;
-  text-transform: uppercase;
+  letter-spacing: 0.5px;
   margin: 0;
+  text-transform: uppercase;
+  text-align: center;
 }
 
+/* SEARCH PILL DI HEADER */
 .search-pill {
   background: #ffffff;
   border: 1px solid #e0e0e0;
@@ -46,8 +56,18 @@ body {
   gap: 10px;
   width: 200px;
 }
-.search-pill input { border: none; outline: none; width: 100%; }
-.search-pill i { color: #aaa; }
+
+.search-pill i {
+  color: #aaa;
+  font-size: 14px;
+}
+
+.search-pill input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  width: 100%;
+}
 
 /* --- MAIN CONTAINER --- */
 .event-container {

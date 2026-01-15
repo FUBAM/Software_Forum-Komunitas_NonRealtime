@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Events;
+// HAPUS ATAU GANTI BARIS INI:
+// use Illuminate\Database\Eloquent\Model;
+
+// PAKAI INI:
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PesertaKegiatan extends Model
+// GANTI extends Model MENJADI extends Pivot
+class PesertaKegiatan extends Pivot
 {
     protected $table = 'peserta_kegiatan';
 
@@ -19,10 +22,11 @@ class PesertaKegiatan extends Model
         'review_text',
     ];
 
-    /**
-     * Tabel ini menggunakan created_at & updated_at
-     * (default Laravel = true, ditulis eksplisit untuk kejelasan)
-     */
+    protected $guarded = ['id'];
+
+    // Wajib true karena di migrasi Anda pakai $table->id();
+    public $incrementing = true; 
+
     public $timestamps = true;
 
     /*

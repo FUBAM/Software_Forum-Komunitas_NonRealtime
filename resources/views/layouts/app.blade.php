@@ -72,7 +72,9 @@
 
 <body>
 
-    @include('partials.header')
+    @if(!isset($noHeader))
+        @include('partials.header')
+    @endif
 
     <main>
         @yield('content')
