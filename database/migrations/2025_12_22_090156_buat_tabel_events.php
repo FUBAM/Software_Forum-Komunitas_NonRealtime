@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kategori_id')->constrained('kategori')->onDelete('cascade');
             $table->foreignId('komunitas_id')->nullable()->constrained('komunitas')->onDelete('cascade');
+            $table->foreignId('kota_id')->nullable()->constrained('kota')->onDelete('set null');
             $table->foreignId('diusulkan_oleh')->constrained('users')->onDelete('cascade');
             $table->enum('type', ['kegiatan', 'lomba']);
             $table->string('judul', 150);

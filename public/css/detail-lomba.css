@@ -62,6 +62,7 @@
     max-width: 100%;
     height: auto;
     max-height: 600px; /* Batas tinggi agar tidak terlalu panjang */
+    border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 

@@ -1,17 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="section">
-    <div class="section-container">
 
-        <h1>{{ $berita->judul }}</h1>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/detail_berita.css') }}">
+@endpush
 
-        @if($berita->gambar_url)
-        <img src="{{ asset($berita->gambar_url) }}" style="max-width:100%;margin:20px 0;">
-        @endif
+<section class="news-page">
+    <div class="article-container">
 
-        <div class="berita-konten">
-            {!! nl2br(e($berita->konten)) !!}
+        <h1 class="article-title">{{ $berita->judul }}</h1>
+
+            @if($berita->gambar_url)
+            <img class="article-img" src="{{ asset($berita->gambar_url) }}">
+            @endif
+
+        <div class="article-content">
+            <p>{!! nl2br(e($berita->konten)) !!}</p>
         </div>
 
     </div>

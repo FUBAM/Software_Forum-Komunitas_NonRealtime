@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 /**
  * @property-read \App\Models\User $pengusul
  * @property-read \App\Models\Komunitas|null $komunitas
+ * @property-read \App\Models\Kota|null $kota
  * @property-read \App\Models\Kategori $kategori
  *
  * @property-read string $jenis
@@ -22,6 +23,7 @@ class Events extends Model
     protected $fillable = [
         'kategori_id',
         'komunitas_id',
+        'kota_id',
         'diusulkan_oleh',
         'type',
         'judul',
@@ -72,6 +74,11 @@ class Events extends Model
     public function category()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    public function kota()
+    {
+        return $this->belongsTo(Kota::class, 'kota_id');
     }
 
     public function community()

@@ -87,7 +87,7 @@
               $team = [
                   ['name' => 'IHSAN ZUFAR A', 'role' => 'UI / UX DESIGN', 'img' => 'zufar.png'],
                   ['name' => 'HABIB FARHAN', 'role' => 'FRONTEND', 'img' => 'habib.jpeg'],
-                  ['name' => 'M BASIRU F. A. U', 'role' => 'BACKEND', 'img' => 'basir.jpg'],
+                  ['name' => 'BASIR HENSEM SWAGGG', 'role' => 'BACKEND', 'img' => 'basir.jpg'],
                   ['name' => 'AFRIZAL IBNU AZIZ', 'role' => 'BACKEND', 'img' => 'ibnu.jpg'],
                   ['name' => 'RIDWAN KAMIL', 'role' => 'AUDITOR', 'img' => 'ridwan.jpeg'],
                   ['name' => 'MBAK MBAK', 'role' => 'AUDITOR', 'img' => 'mbak.webp'],

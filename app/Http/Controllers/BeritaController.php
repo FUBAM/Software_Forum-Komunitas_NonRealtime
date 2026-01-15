@@ -170,6 +170,6 @@ class BeritaController extends Controller
         $berita = Berita::where('status', 'published')
             ->findOrFail($id);
 
-        return view('berita.detail', compact('berita'));
+        return view('detail-berita', compact('berita'));
     }
 }
