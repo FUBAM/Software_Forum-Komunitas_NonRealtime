@@ -7,10 +7,12 @@ use App\Models\User;
 use App\Models\Events;
 use App\Models\PesanGrup;
 use App\Models\PesertaKegiatan;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Laporan extends Model
 {
+    use HasFactory;
     protected $table = 'laporan';
 
     protected $fillable = [

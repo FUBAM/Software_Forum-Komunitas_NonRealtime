@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminSeeder extends Seeder
 {
@@ -38,5 +39,22 @@ class AdminSeeder extends Seeder
         $this->command->info("Created admin user: {$email} (password: admin123)");
 
         User::factory(10)->create();
+
+        $user1 = [
+            // 1. Peserta di Event 21 (Yang sudah selesai)
+            // Asumsi: Karena event selesai, statusnya mungkin sudah 'hadir'
+            [
+                'nama' => 'user1',
+                'email' => 'user@satu.id',
+                'password' => Hash::make('usersatu'),
+                'role' => 'member',
+                'xp_terkini' => 666,
+                'level_terkini' => 6,
+                'skor_kepercayaan' => 99,
+                'terpercaya' => true,
+            ],
+        ];
+
+        DB::table('users')->insertOrIgnore($user1);
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('laporan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pelapor_id')->constrained('users')->onDelete('cascade');
-            $table->enum('tipe_target', ['kegiatan', 'pesan', 'peserta']);
+            $table->enum('tipe_target', ['events', 'pesan', 'user']);
             $table->unsignedBigInteger('target_id');
             $table->string('alasan');
             $table->enum('status', ['pending', 'resolved'])->default('pending');

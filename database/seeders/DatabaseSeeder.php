@@ -21,7 +21,11 @@ class DatabaseSeeder extends Seeder
             KategoriSeeder::class,
             KotaSeeder::class,
             KomunitasSeeder::class,
-            EventsSeeder::class
+            EventsSeeder::class,
+            PesertaSeeder::class,
+            GrupSeeder::class,
+            PesanGrupSeeder::class,
+            LaporanSeeder::class,
         ]);
     }
 }

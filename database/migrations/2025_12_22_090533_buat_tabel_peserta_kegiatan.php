@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('events_id')->constrained('events')->onDelete('cascade');
-            $table->enum('status', ['tertarik', 'kehadiran', 'pemenang'])->default('tertarik');
+            $table->enum('status', ['hadir', 'pemenang'])->nullable();
             $table->text('bukti_url')->nullable();
             $table->text('review_text')->nullable();
             $table->timestamps();

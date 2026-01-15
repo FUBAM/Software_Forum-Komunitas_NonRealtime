@@ -143,4 +143,15 @@ class User extends Authenticatable
         ->using(BadgeUser::class)
         ->withPivot('earned_at');
     }
+
+    public function tambahXP($amount)
+    {
+        $this->xp_terkini += $amount;
+
+        // Hitung Level: (Total XP / 100) + 1 (agar mulai dari lvl 1)
+        // Contoh: 50 XP = Lvl 1. 120 XP = Lvl 2.
+        $this->level_terkini = floor($this->xp_terkini / 100) + 1;
+
+        $this->save();
+    }
 }

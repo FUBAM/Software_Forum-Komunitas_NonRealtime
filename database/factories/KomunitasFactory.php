@@ -23,7 +23,7 @@ class KomunitasFactory extends Factory
 
             'nama' => $this->faker->company() . ' Community',
             'deskripsi' => $this->faker->paragraph(),
-            'icon_url' => 'image/komunitas/komunitas-default.png',
+            'icon_url' => 'image/komunitas/komunitas-default.jpg',
         ];
     }
 }
