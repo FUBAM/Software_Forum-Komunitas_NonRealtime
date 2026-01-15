@@ -1,72 +1,36 @@
-<div id="registerModal" class="auth-modal hidden">
-    <div class="auth-modal-content">
+<div class="auth-modal" id="registerModal">
+    <button class="close-btn" onclick="closeAuth()">×</button>
+    <h2>Buat Akun</h2>
 
-        <button class="auth-close" onclick="closeRegister()">×</button>
+    @if(session('status'))
+    <div class="success-message" style="color:#00695c;margin-bottom:8px;">{{ session('status') }}</div>
+    @endif
 
-        <h2>Daftar Akun ZHIB</h2>
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+        <label>Username</label>
+        <input type="text" name="username" id="username" placeholder="Username" required value="{{ old('username') }}">
 
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    placeholder="Username"
-                    required
-                >
-            </div>
+        <label>Email</label>
+        <input type="email" name="email"  id="email" placeholde required value="{{ old('email') }}">
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="Email aktif"
-                    required
-                >
-            </div>
+        <label>Password</label>
+        <input type="password" name="password" id="password" placeholder="Password" required>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="Password"
-                    required
-                >
-            </div>
+        <label>Konfirmasi Password</label>
+        <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Ulangi Password" required>
 
-            <div class="form-group">
-                <label for="password_confirmation">Konfirmasi Password</label>
-                <input
-                    type="password"
-                    name="password_confirmation"
-                    id="password_confirmation"
-                    placeholder="Ulangi password"
-                    required
-                >
-            </div>
+        <div class="register-agree">
+            <input type="checkbox" name="terms" {{ old('terms') ? 'checked' : '' }}>
+            <span class="switch-text">Saya setuju dengan <a href="/tentang_kami" target="_blank">Syarat dan Ketentuan</a></span>
+        </div>
 
-            <div class="form-group checkbox">
-                <label>
-                    <input type="checkbox" name="terms" required>
-                    Saya setuju dengan <a href="/tentang_kami" target="_blank">syarat dan ketentuan</a>
-                </label>
-            </div>
+        <button type="submit" class="primary-btn">Buat Akun</button>
+    </form>
 
-            <button type="submit" class="btn-primary">
-                Daftar
-            </button>
-        </form>
-
-        <p class="auth-switch">
-            Sudah punya akun?
-            <a href="#" onclick="switchToLogin()">Login di sini</a>
-        </p>
-    </div>
+    <p class="switch-text">
+        Sudah Punya Akun?
+        <a href="#" onclick="switchToLogin()">Masuk</a>
+    </p>
 </div>

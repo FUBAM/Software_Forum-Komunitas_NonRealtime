@@ -25,17 +25,6 @@ class MasterSeeder extends Seeder
         //     kota::create(['nama' => $k]);
         // }
 
-        // // 2. ISI DATA KATEGORI
-        // $daftar_kategori = [
-        //     ['nama' => 'Teknologi', 'icon_url' => 'icons/tech.png'],
-        //     ['nama' => 'Lingkungan', 'icon_url' => 'icons/nature.png'],
-        //     ['nama' => 'Olahraga', 'icon_url' => 'icons/sport.png'],
-        //     ['nama' => 'Seni & Budaya', 'icon_url' => 'icons/art.png'],
-        // ];
-        // foreach ($daftar_kategori as $kat) {
-        //     kategori::create($kat);
-        // }
-
         // // 3. ISI DATA BADGE (LENCANA)
         // badge::create([
         //     'nama' => 'Warga Teladan',

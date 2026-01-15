@@ -121,112 +121,13 @@ function initCustomSlider(containerId, prevBtnId, nextBtnId, scrollAmount) {
 
 @guest
 <!-- Auth overlays & modals (only for guests) -->
-<div class="auth-overlay" id="authOverlay"></div>
-<div id="blade-helpers" data-has-errors="{{ $errors->any() ? '1' : '0' }}"
-    data-register-errors="{{ (old('nama') || $errors->has('nama') || $errors->has('password') || $errors->has('password_confirmation')) ? '1' : '0' }}"
-    style="display:none"></div>
 
-<div class="auth-modal" id="loginModal">
-    <button class="close-btn" onclick="closeAuth()">×</button>
-    <h2>Masuk</h2>
-
-    @if($errors->has('email'))
-    <div class="error-message" style="color:#b00020;margin-bottom:8px;">{{ $errors->first('email') }}</div>
-    @endif
-
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-
-        <label>Username / Email</label>
-        <input type="text" name="login" value="{{ old('login') }}">
-
-        <label>Password</label>
-        <input type="password" name="password">
-
-        <div class="form-options">
-            <label class="remember">
-                <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                Remember me
-            </label>
-
-            <a href="#" class="forgot-link" onclick="openForgot()">Lupa?</a>
-        </div>
-
-        <button type="submit" class="primary-btn">Masuk</button>
-    </form>
-
-    <p class="switch-text">
-        Belum Punya Akun?
-        <a href="#" onclick="switchToRegister()">Buat Akun</a>
-    </p>
-</div>
-
-<div class="auth-modal" id="registerModal">
-    <button class="close-btn" onclick="closeAuth()">×</button>
-    <h2>Buat Akun</h2>
-
-    @if(session('status'))
-    <div class="success-message" style="color:#00695c;margin-bottom:8px;">{{ session('status') }}</div>
-    @endif
-
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
-
-        <label>Username</label>
-        <input type="text" name="username" value="{{ old('username') }}">
-
-        <label>Email</label>
-        <input type="email" name="email" value="{{ old('email') }}">
-
-        <label>Password</label>
-        <input type="password" name="password">
-
-        <label>Konfirmasi Password</label>
-        <input type="password" name="password_confirmation">
-
-        <div class="register-agree">
-            <input type="checkbox" name="terms" {{ old('terms') ? 'checked' : '' }}>
-            <span>Saya setuju dengan Syarat & Ketentuan</span>
-        </div>
-
-        <button type="submit" class="primary-btn">Buat Akun</button>
-    </form>
-
-    <p class="switch-text">
-        Sudah Punya Akun?
-        <a href="#" onclick="switchToLogin()">Masuk</a>
-    </p>
-</div>
-
-<div class="auth-modal" id="forgotModal">
-    <button class="close-btn" onclick="closeAuth()">×</button>
-
-    <h2>Lupa sandi?</h2>
-
-    <img src="{{ asset('image/icon/lupasandi.png') }}" alt="Lupa Sandi" class="forgot-icon">
-
-    <p class="forgot-desc">
-        Silahkan masukkan Username atau Email Anda dan kami akan
-        mengirimkan tautan untuk masuk ke akun anda semula
-    </p>
-
-    <input type="text" placeholder="Masukkan Username/Email Anda">
-
-    <button class="primary-btn" onclick="goToResetPage()">
-        Kirim Tautan
-    </button>
-
-    <div class="divider">ATAU</div>
-
-    <a href="#" onclick="openRegister()">Buat Akun Baru</a>
-</div>
 
 <script>
 // 1. Definisikan Elemen
 const overlay = document.getElementById('authOverlay');
 const loginModal = document.getElementById('loginModal');
 const registerModal = document.getElementById('registerModal');
-const forgotModal = document.getElementById('forgotModal');
 
 // 2. Helper: Hapus pesan error/success di modal auth
 function clearAuthErrors() {
@@ -242,43 +143,8 @@ function clearAuthErrors() {
     }
 }
 
-// 3. Fungsi Reset Tampilan (Sembunyikan semua modal)
-function closeAuth() {
-    overlay.style.display = 'none';
-    loginModal.style.display = 'none';
-    registerModal.style.display = 'none';
-    forgotModal.style.display = 'none';
-
-    // Clear any leftover server-rendered messages so switching modals is clean
-    clearAuthErrors();
-}
-
-// 4. Fungsi Buka Login (Awal)
-function openLogin() {
-    // Jangan clear server-rendered messages saat membuka login otomatis
-    registerModal.style.display = 'none';
-    forgotModal.style.display = 'none';
-    overlay.style.display = 'block';
-    loginModal.style.display = 'block';
-}
-
-// 4. Fungsi Buka Register (Awal)
-function openRegister() {
-    // Jangan clear server-rendered messages saat membuka register
-    loginModal.style.display = 'none';
-    forgotModal.style.display = 'none';
-    overlay.style.display = 'block';
-    registerModal.style.display = 'block';
-}
-
 // 5. Fungsi Buka Lupa Password
-function openForgot() {
-    // Jangan clear server-rendered messages saat membuka forgot
-    loginModal.style.display = 'none';
-    registerModal.style.display = 'none';
-    overlay.style.display = 'block';
-    forgotModal.style.display = 'block';
-}
+
 
 // 6. Fungsi Pindah dari Login ke Register (YANG HILANG TADI)
 function switchToRegister() {
@@ -296,11 +162,7 @@ function switchToLogin() {
     loginModal.style.display = 'block';
 }
 
-// 8. Fungsi Reset Password Action
-function goToResetPage() {
-    // Redirect ke Route Laravel 'reset-password'
-    window.location.href = "{{ url('/reset-password') }}";
-}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
