@@ -2,9 +2,9 @@
 
 @section('title', 'Konfirmasi Pemulihan Sandi | ZHIB')
 
-@section('styles')
+@push('styles')
 <link rel="stylesheet" href="{{ asset('css/reset.css') }}">
-@endsection
+@endpush
 
 @section('content')
 <main class="reset-container">

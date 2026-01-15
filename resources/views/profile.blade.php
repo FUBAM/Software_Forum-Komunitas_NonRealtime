@@ -1,39 +1,51 @@
 @extends('layouts.app')
 
-@section('styles')
+@push('styles')
 <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
-@endsection
+@endpush
+
+@php
+    $defaultAvatar = 'image/avatar/avatar-default.jpg';
+@endphp
 
 @section('content')
 <main class="profile-page">
 
+    {{-- =========================
+        GUEST PROMPT
+    ========================== --}}
     @guest
-    @if(!request()->get('user'))
-    <section class="profile-card guest-prompt">
-        <div class="guest-msg">
-            <h2>Anda belum masuk</h2>
-            <p>Silakan masuk atau daftar untuk melihat dan mengedit profil Anda.</p>
-            <div class="guest-actions">
-                <a href="{{ route('login') }}" class="btn btn-primary">Masuk</a>
-                <a href="{{ route('register') }}" class="btn btn-secondary">Daftar</a>
+        @if(!request()->get('user'))
+        <section class="profile-card guest-prompt">
+            <div class="guest-msg">
+                <h2>Anda belum masuk</h2>
+                <p>Silakan masuk atau daftar untuk melihat dan mengedit profil Anda.</p>
+                <div class="guest-actions">
+                    <a href="#" onclick="openLogin()" class="btn btn-primary">Masuk</a>
+                    <a href="#" onclick="openRegister()" class="btn btn-secondary">Daftar</a>
+                </div>
             </div>
-        </div>
-    </section>
-    @endif
+        </section>
+        @endif
     @endguest
+
+    {{-- =========================
+        PROFIL SENDIRI (VIEW)
+    ========================== --}}
+    @auth
+    @php $user = auth()->user(); @endphp
 
     <section id="profileViewOwn" class="profile-card">
 
         <div class="profile-header-own">
+
             <div class="profile-avatar-section">
-                @auth
                 <img class="profile-avatar"
-                    src="{{ asset(Auth::user()->foto_profil_url ?? 'image/download (13).jpg') }}" alt="Avatar">
-                @else
-                <img class="profile-avatar" src="{{ asset('image/download (13).jpg') }}" alt="Avatar">
-                @endauth
+                     src="{{ asset($user->foto_profil_url ?? $defaultAvatar) }}"
+                     alt="{{ $user->nama }}">
+
                 <div class="profile-level-box">
-                    <span class="level-text">LVL. {{ auth()->check() ? Auth::user()->level_terkini : 999 }}</span>
+                    <span class="level-text">LVL. {{ $user->level_terkini ?? 1 }}</span>
                     <div class="level-bar">
                         <div class="level-progress"></div>
                     </div>
@@ -41,242 +53,210 @@
             </div>
 
             <div class="profile-info-own">
-                <h2>
-                    @auth
-                    {{ Auth::user()->nama }}
-                    @else
-                    Windah Batubara
-                    @endauth
-                </h2>
+                <h2>{{ $user->nama }}</h2>
 
                 <div class="profile-badges">
-                    <img src="{{ asset('image/badges/badge (1).png') }}" alt="Badge 1" class="badge">
-                    <img src="{{ asset('image/badges/badge (2).png') }}" alt="Badge 2" class="badge">
-                    <img src="{{ asset('image/badges/badge (3).png') }}" alt="Badge 3" class="badge">
-                    <img src="{{ asset('image/badges/badge (4).png') }}" alt="Badge 4" class="badge">
-                    <img src="{{ asset('image/badges/badge (5).png') }}" alt="Badge 5" class="badge">
+                    @forelse($user->badges as $badge)
+                        <img src="{{ asset($badge->image_url) }}" alt="Badge" class="badge">
+                    @empty
+                        <span class="text-muted">Belum ada badge</span>
+                    @endforelse
                 </div>
 
                 <p class="profile-bio">
-                    @auth
-                    {{ Auth::user()->bio ?? 'Belum ada bio.' }}
-                    @else
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
-                    the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
-                    of type and scrambled it to make a type specimen book. It has survived not only five centuries,
-                    but also the leap into electronic typesetting, remaining essentially unchanged.
-                    @endauth
+                    {{ $user->bio ?: 'Belum ada bio' }}
                 </p>
 
                 <p class="join-date-text">
                     <strong>Bergabung Sejak:</strong>
-                    {{ auth()->check() ? Auth::user()->created_at->format('d F Y') : '01 Desember 1961' }}
+                    {{ $user->created_at->translatedFormat('d F Y') }}
                 </p>
             </div>
 
-            @auth
-            <button id="btnEditProfile" class="btn-edit">
+            {{-- 🔥 PERBAIKAN 1: Tambahkan id="btnEditProfile" 🔥 --}}
+            <a href="{{ route('profile.show', ['edit' => true]) }}"
+            id="btnEditProfile" 
+            class="btn-edit">
                 Edit Profil
-            </button>
-            @endauth
+            </a>
+
         </div>
 
         <div class="profile-content-full">
             <div class="profile-box-transparent">
                 <h3 class="center-title">Aktivitas Terakhir</h3>
                 <div class="activity-grid">
-                    <img src="{{ asset('image/img (5).jpg') }}" alt="Activity 1">
-                    <img src="{{ asset('image/img (2).jpg') }}" alt="Activity 2">
-                    <img src="{{ asset('image/img (3).jpg') }}" alt="Activity 3">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    @auth
-    <section id="profileEdit" class="profile-card hidden">
-
-        <h2 class="section-title-center">Edit Profil</h2>
-
-        <div class="edit-profile-top">
-            <div class="edit-avatar">
-                @auth
-                <img src="{{ asset(Auth::user()->foto_profil_url ?? 'image/download (13).jpg') }}" alt="Avatar">
-                @else
-                <img src="{{ asset('image/download (13).jpg') }}" alt="Avatar">
-                @endauth
-                <button class="btn-change-photo">Ganti Foto</button>
-            </div>
-
-            <div class="edit-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nama Lengkap</label>
-                        <input type="text" value="{{ auth()->check() ? Auth::user()->nama : '' }}">
-                    </div>
-                    <div class="form-group">
-                        <label>No. Telepon</label>
-                        <input type="text" value="{{ auth()->check() ? (Auth::user()->no_telepon ?? '') : '' }}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-
-                    <div class="left-column-inputs">
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" value="{{ auth()->check() ? Auth::user()->nama : '' }}">
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" value="{{ auth()->check() ? Auth::user()->email : '' }}">
+                    <div class="profile-content-full">
+                        <div class="profile-box-transparent">
+                            @if(isset($recentEvents) && $recentEvents->count() > 0)
+                                <div class="activity-grid">
+                                    @foreach($recentEvents as $event)
+                                        <div class="activity-item">
+                                            <img
+                                                src="{{ asset($event->poster_url ?? 'image/default-event.jpg') }}"
+                                                alt="{{ $event->judul }}"
+                                            >
+                                            <p class="activity-title">
+                                                {{ \Illuminate\Support\Str::limit($event->judul, 30) }}
+                                            </p>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="activity-empty">
+                                    Belum ada aktivitas event yang diikuti
+                                </p>
+                            @endif
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Bio / Tentang Saya</label>
-                        <textarea
-                            style="height: 100%;">{{ auth()->check() ? (Auth::user()->bio ?? '') : '' }}</textarea>
-                    </div>
-
                 </div>
             </div>
-        </div>
-
-        <h2 class="section-title-center">Atur Password</h2>
-
-        <div class="edit-password">
-            <div class="password-group">
-                <label>Password Lama</label>
-                <input type="password" placeholder="yanto123">
-            </div>
-            <div class="password-group">
-                <label>Password Baru</label>
-                <input type="password" placeholder="yanto1234">
-            </div>
-            <div class="password-group">
-                <label>Konfirmasi Password</label>
-                <input type="password" placeholder="yanto1234">
-            </div>
-        </div>
-
-        <h2 class="section-title-center">Badge & Pencapaian</h2>
-
-        <div class="badge-section">
-            <p class="badge-section-title">Badge Aktif (Ditampilkan)</p>
-            <div class="badge-list" id="activeBadges">
-                <div class="badge-item-edit selected" data-badge="1">
-                    <img src="{{ asset('image/badges/badge (1).png') }}" alt="Badge 1">
-                </div>
-                <div class="badge-item-edit selected" data-badge="2">
-                    <img src="{{ asset('image/badges/badge (2).png') }}" alt="Badge 2">
-                </div>
-                <div class="badge-item-edit selected" data-badge="3">
-                    <img src="{{ asset('image/badges/badge (3).png') }}" alt="Badge 3">
-                </div>
-                <div class="badge-item-edit selected" data-badge="4">
-                    <img src="{{ asset('image/badges/badge (4).png') }}" alt="Badge 4">
-                </div>
-                <div class="badge-item-edit selected" data-badge="5">
-                    <img src="{{ asset('image/badges/badge (5).png') }}" alt="Badge 5">
-                </div>
-            </div>
-
-            <p class="badge-section-title">Badge yang Dimiliki</p>
-            <div class="badge-list large" id="allBadges">
-                <div class="badge-item-edit" data-badge="1">
-                    <img src="{{ asset('image/badges/badge (1).png') }}" alt="Badge 1">
-                </div>
-                <div class="badge-item-edit" data-badge="2">
-                    <img src="{{ asset('image/badges/badge (2).png') }}" alt="Badge 2">
-                </div>
-                <div class="badge-item-edit" data-badge="3">
-                    <img src="{{ asset('image/badges/badge (3).png') }}" alt="Badge 3">
-                </div>
-                <div class="badge-item-edit" data-badge="4">
-                    <img src="{{ asset('image/badges/badge (4).png') }}" alt="Badge 4">
-                </div>
-                <div class="badge-item-edit" data-badge="5">
-                    <img src="{{ asset('image/badges/badge (5).png') }}" alt="Badge 5">
-                </div>
-                <div class="badge-item-edit" data-badge="6">
-                    <img src="{{ asset('image/badges/badge (6).png') }}" alt="Badge 6">
-                </div>
-            </div>
-        </div>
-
-        <div class="edit-actions">
-            <button id="btnCancel" class="btn-cancel"> Batal </button>
-            <button class="btn-save">Simpan</button>
         </div>
 
     </section>
-
     @endauth
 
-    <section id="profileViewOther" class="profile-card {{ isset($viewedUser) ? '' : 'hidden' }}">
+    {{-- =========================
+        PROFIL SENDIRI (EDIT)
+    ========================== --}}
+    {{-- =========================
+        PROFIL SENDIRI (EDIT)
+    ========================== --}}
+    @auth
+    <section id="profileEdit" class="profile-card hidden">
+        
+        {{-- 🔥 1. BUNGKUS DENGAN FORM KE ROUTE UPDATE 🔥 --}}
+        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <h2 class="section-title-center">Edit Profil</h2>
+
+            <div class="edit-profile-top">
+
+                {{-- Bagian Foto Profil --}}
+                <div class="edit-avatar">
+                    <img src="{{ asset($user->foto_profil_url ?? $defaultAvatar) }}" alt="Avatar" id="previewAvatar">
+                    
+                    {{-- Input file tersembunyi --}}
+                    <input type="file" name="foto_profil" id="inputAvatar" style="display: none;" accept="image/*">
+                    <button type="button" class="btn-change-photo" onclick="document.getElementById('inputAvatar').click()">
+                        Ganti Foto
+                    </button>
+                </div>
+
+                {{-- Bagian Input Data --}}
+                <div class="edit-form">
+                    
+                    {{-- Row 1: Username & Email --}}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Username</label>
+                            {{-- Mapping ke database 'nama' --}}
+                            <input type="text" name="nama" value="{{ old('nama', $user->nama) }}" required>
+                            @error('nama') <small style="color:red">{{ $message }}</small> @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}" required>
+                            @error('email') <small style="color:red">{{ $message }}</small> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Row 2: Bio (Full Width) --}}
+                    <div class="form-group">
+                        <label>Bio / Tentang Saya</label>
+                        <textarea name="bio" placeholder="Ceritakan sedikit tentang dirimu...">{{ old('bio', $user->bio) }}</textarea>
+                        @error('bio') <small style="color:red">{{ $message }}</small> @enderror
+                    </div>
+
+                </div>
+            </div>
+
+            <h2 class="section-title-center">Atur Password</h2>
+            <p style="text-align: center; font-size: 13px; color: #666; margin-top: -15px; margin-bottom: 20px;">
+                Kosongkan jika tidak ingin mengubah password
+            </p>
+
+            <div class="edit-password">
+                <div class="password-group">
+                    <label>Password Saat Ini (Wajib jika ganti password)</label>
+                    <input type="password" name="current_password">
+                    @error('current_password') <small style="color:red">{{ $message }}</small> @enderror
+                </div>
+                <div class="password-group">
+                    <label>Password Baru</label>
+                    <input type="password" name="password">
+                    @error('password') <small style="color:red">{{ $message }}</small> @enderror
+                </div>
+                <div class="password-group">
+                    <label>Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation">
+                </div>
+            </div>
+
+            <div class="edit-actions">
+                <button type="button" id="btnCancel" class="btn-cancel">Batal</button>
+                <button type="submit" class="btn-save">Simpan</button>
+            </div>
+        
+        </form>
+
+    </section>
+    @endauth
+
+    {{-- =========================
+        PROFIL ORANG LAIN
+    ========================== --}}
+    @if(isset($viewedUser))
+    <section id="profileViewOther" class="profile-card">
 
         <h2 class="section-title-center">Profil Pengguna</h2>
 
-        @if(isset($viewedUser) && $viewedUser)
+        @if($viewedUser)
         <div class="profile-header-other">
             <div class="profile-avatar-section-center">
-                <img class="profile-avatar" src="{{ asset($viewedUser->foto_profil_url ?? 'image/download (13).jpg') }}"
-                    alt="Avatar">
+                <img class="profile-avatar"
+                     src="{{ asset($viewedUser->foto_profil_url ?? $defaultAvatar) }}"
+                     alt="{{ $viewedUser->nama }}">
             </div>
 
             <div class="profile-info-center">
                 <h2>{{ $viewedUser->nama }}</h2>
 
                 <p class="profile-bio-center">
-                    {{ $viewedUser->bio ?? 'Belum ada bio.' }}
+                    {{ $viewedUser->bio ?? 'Belum ada bio' }}
                 </p>
 
                 <div class="badge-title">Badge & Pencapaian</div>
                 <div class="profile-badges-center">
-                    @foreach($viewedUser->badges ?? [] as $badge)
-                    <img src="{{ asset($badge->image_url ?? 'image/badges/badge (1).png') }}" alt="Badge" class="badge">
-                    @endforeach
+                    @forelse($viewedUser->badges as $badge)
+                        <img src="{{ asset($badge->image_url) }}" class="badge">
+                    @empty
+                        <span class="text-muted">Belum ada badge</span>
+                    @endforelse
                 </div>
 
-                <div class="join-date">Bergabung sejak
-                    {{ $viewedUser->created_at ? $viewedUser->created_at->format('F Y') : '-' }}
+                <div class="join-date">
+                    Bergabung sejak {{ $viewedUser->created_at->translatedFormat('F Y') }}
                 </div>
-            </div>
-        </div>
-
-        <div class="profile-single-box">
-            <h3>Aktivitas Terakhir</h3>
-            <div class="activity-grid">
-                <img src="{{ asset('image/img (5).jpg') }}" alt="Activity 1">
-                <img src="{{ asset('image/img (2).jpg') }}" alt="Activity 2">
-                <img src="{{ asset('image/img (3).jpg') }}" alt="Activity 3">
             </div>
         </div>
         @else
-        <div class="profile-header-other">
-            <div class="profile-avatar-section-center">
-                <img class="profile-avatar" src="{{ asset('image/download (13).jpg') }}" alt="Avatar">
-            </div>
-
-            <div class="profile-info-center">
-                <h2>Profil tidak ditemukan</h2>
-
-                <p class="profile-bio-center">
-                    Pengguna yang Anda cari tidak ditemukan atau belum memiliki profil publik.
-                </p>
-            </div>
-        </div>
+        <p class="text-center">Profil tidak ditemukan.</p>
         @endif
 
     </section>
+    @endif
 
 </main>
-
 @endsection
 
-@section('scripts')
-<script>
+@push('scripts')
+<script> 
+document.addEventListener('DOMContentLoaded', function () {
+
     const profileViewOwn = document.getElementById('profileViewOwn');
     const profileEdit = document.getElementById('profileEdit');
     const profileViewOther = document.getElementById('profileViewOther');
@@ -286,50 +266,69 @@
 
     const params = new URLSearchParams(window.location.search);
     const viewedUser = params.get('user');
-    const isEdit = params.get('edit') === 'true';
+    
+    // 🔥 PERBAIKAN 2: Cek apakah nilainya 'true' ATAU '1' 🔥
+    const isEdit = params.get('edit') === 'true' || params.get('edit') === '1';
 
+    const inputAvatar = document.getElementById('inputAvatar');
+    const previewAvatar = document.getElementById('previewAvatar');
     // ======================
-    // PROFIL PUBLIK
+    // LOGIKA TAMPILAN
     // ======================
+    
+    // 1. Jika melihat user lain (Priority 1)
     if (viewedUser) {
-        profileViewOwn.classList.add('hidden');
-        profileEdit.classList.add('hidden');
-        profileViewOther.classList.remove('hidden');
+        if (profileViewOwn) profileViewOwn.classList.add('hidden');
+        if (profileEdit) profileEdit.classList.add('hidden');
+        if (profileViewOther) profileViewOther.classList.remove('hidden');
     }
-
-    // ======================
-    // PROFIL SENDIRI
-    // ======================
+    // 2. Jika Mode Edit Profil Sendiri (Priority 2)
+    else if (isEdit) {
+        if (profileViewOther) profileViewOther.classList.add('hidden');
+        if (profileViewOwn) profileViewOwn.classList.add('hidden'); // Sembunyikan view
+        if (profileEdit) profileEdit.classList.remove('hidden');    // Munculkan form edit
+    } 
+    // 3. Default: Lihat Profil Sendiri
     else {
-        profileViewOther.classList.add('hidden');
-
-        if (isEdit) {
-            profileViewOwn.classList.add('hidden');
-            profileEdit.classList.remove('hidden');
-        } else {
-            profileViewOwn.classList.remove('hidden');
-            profileEdit.classList.add('hidden');
-        }
+        if (profileViewOther) profileViewOther.classList.add('hidden');
+        if (profileEdit) profileEdit.classList.add('hidden');
+        if (profileViewOwn) profileViewOwn.classList.remove('hidden');
     }
 
+    // Preview Avatar saat dipilih
+
+    if(inputAvatar && previewAvatar) {
+        inputAvatar.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewAvatar.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
     // ======================
-    // BUTTON ACTION
+    // EVENT LISTENERS
     // ======================
+    
     if (btnEdit) {
-        btnEdit.onclick = () => {
-            // Menggunakan Laravel URL
-            window.location.href = "{{ url('/profile') }}?edit=true";
-        };
+        btnEdit.addEventListener('click', function (e) {
+            // Kita biarkan refresh halaman agar URL terupdate bersih
+            // Tapi kita pastikan URL tujuannya benar
+            window.location.href = "{{ url('/profile') }}?edit=1";
+        });
     }
 
     if (btnCancel) {
-        btnCancel.onclick = () => {
-            // Menggunakan Laravel URL
-            window.location.href = "{{ url('/profile') }}";
-        };
+        btnCancel.addEventListener('click', function (e) {
+            e.preventDefault(); 
+            // Kembali ke profil biasa (hapus query param)
+            window.location.href = "{{ url('/profile') }}"; 
+        });
     }
 
-    // Profile dropdown handled by header partial (deduplicated)
-    // Header script toggles `#profileDropdown` and closes other nav dropdowns when needed
+});
 </script>
-@endsection
+@endpush

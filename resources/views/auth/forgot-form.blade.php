@@ -18,5 +18,5 @@
 
     <div class="divider">ATAU</div>
 
-    <a href="#" onclick="openRegister()">Buat Akun Baru</a>
+    <a href="#" onclick="switchToRegister()">Buat Akun Baru</a>
 </div>

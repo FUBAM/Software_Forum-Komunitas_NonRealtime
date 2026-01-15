@@ -117,15 +117,24 @@
   flex-direction: column;
   /* Agar teks nama rata kiri (sesuai gambar) atau tengah */
   text-align: left; 
+  overflow: hidden;  
 }
 
 .team-card img {
   width: 100%;
+  height: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  transition: transform 0.35s ease, filter 0.35s ease;
+  pointer-events: none;
   border-radius: 8px;
   margin-bottom: 12px;
   background-color: #f0f0f0;
+}
+
+.team-card:hover img {
+    transform: scale(1.08);        /* BESARIN GAMBAR */
+    filter: brightness(1.05);
 }
 
 .team-info h4 {

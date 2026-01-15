@@ -71,12 +71,11 @@
 
                     <img src="{{ auth()->user()->foto_profil_url
                                     ? asset(auth()->user()->foto_profil_url)
-                                    : asset('image/default-avatar.jpg') }}" class="profile-avatar" alt="Profile">
+                                    : asset('image/avatar/avatar-default.jpg') }}" class="profile-avatar" alt="Profile">
                 </button>
 
                 <div class="profile-menu">
                     <a href="{{ route('profile.show') }}">Profil</a>
-                    <a href="{{ route('profile.show', ['edit' => true]) }}">Edit Profil</a>
                     <hr>
                     <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         Logout

@@ -44,6 +44,10 @@
     </p>
 
     <div class="slider-container">
+        
+        {{-- 🔥 TOMBOL PREV (Dikembalikan) 🔥 --}}
+        <button class="slider-btn prev-btn" id="event-prev">❮</button>
+
         <div class="scroll-wrapper" id="event-list">
             @foreach($events as $event)
             <div class="community-card">
@@ -62,6 +66,10 @@
             </div>
             @endforeach
         </div>
+
+        {{-- 🔥 TOMBOL NEXT (Dikembalikan) 🔥 --}}
+        <button class="slider-btn next-btn" id="event-next">❯</button>
+
     </div>
 </section>
 
@@ -77,147 +85,31 @@
 
 @endsection
 
-@section('scripts')
+{{-- 🔥 UBAH DARI @SECTION KE @PUSH AGAR TERBACA DI APP.BLADE.PHP 🔥 --}}
+@push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Inisialisasi Slider
-    initCustomSlider('event-list', 'event-prev', 'event-next', 300);
-    // Note: Saya ubah scrollAmount jadi 300 agar pergeseran lebih terasa (lebar card + gap)
-});
-
-function initCustomSlider(containerId, prevBtnId, nextBtnId, scrollAmount) {
-    const container = document.getElementById(containerId);
-    const prevBtn = document.getElementById(prevBtnId);
-    const nextBtn = document.getElementById(nextBtnId);
-
-    // Debugging: Cek apakah elemen ditemukan
-    if (!container || !prevBtn || !nextBtn) {
-        console.error("Slider elements not found:", {
-            container,
-            prevBtn,
-            nextBtn
-        });
-        return;
-    }
-
-    // Event Listener Tombol NEXT
-    nextBtn.addEventListener('click', function(e) {
-        e.preventDefault(); // Mencegah perilaku default button
-        console.log('Next clicked'); // Cek di Console browser
-
-        // Gunakan scrollLeft langsung agar lebih reliable daripada scrollBy
-        container.scrollLeft += scrollAmount;
+    document.addEventListener('DOMContentLoaded', () => {
+        // Inisialisasi Slider
+        initCustomSlider('event-list', 'event-prev', 'event-next', 300);
     });
 
-    // Event Listener Tombol PREV
-    prevBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('Prev clicked');
+    function initCustomSlider(containerId, prevBtnId, nextBtnId, scrollAmount) {
+        const container = document.getElementById(containerId);
+        const prevBtn = document.getElementById(prevBtnId);
+        const nextBtn = document.getElementById(nextBtnId);
 
-        container.scrollLeft -= scrollAmount;
-    });
-}
-</script>
+        // Jika tombol tidak ada (seperti sebelumnya), script berhenti disini
+        if (!container || !prevBtn || !nextBtn) return;
 
-@guest
-<!-- Auth overlays & modals (only for guests) -->
-
-
-<script>
-// 1. Definisikan Elemen
-const overlay = document.getElementById('authOverlay');
-const loginModal = document.getElementById('loginModal');
-const registerModal = document.getElementById('registerModal');
-
-// 2. Helper: Hapus pesan error/success di modal auth
-function clearAuthErrors() {
-    // Hapus pesan error/success yang di-render server
-    loginModal.querySelectorAll('.error-message, .success-message').forEach(el => el.remove());
-    registerModal.querySelectorAll('.error-message, .success-message').forEach(el => el.remove());
-
-    // Update helper dataset agar tidak auto-open lagi pada runtime
-    const bladeHelpers = document.getElementById('blade-helpers');
-    if (bladeHelpers) {
-        bladeHelpers.dataset.hasErrors = '0';
-        bladeHelpers.dataset.registerErrors = '0';
-    }
-}
-
-// 5. Fungsi Buka Lupa Password
-
-
-// 6. Fungsi Pindah dari Login ke Register (YANG HILANG TADI)
-function switchToRegister() {
-    // bersihkan pesan sebelum pindah
-    clearAuthErrors();
-    loginModal.style.display = 'none';
-    registerModal.style.display = 'block';
-}
-
-// 7. Fungsi Pindah dari Register ke Login (YANG HILANG TADI)
-function switchToLogin() {
-    // bersihkan pesan sebelum pindah
-    clearAuthErrors();
-    registerModal.style.display = 'none';
-    loginModal.style.display = 'block';
-}
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get('login') === '1') {
-        openLogin();
-    }
-
-    const __hasErrors = document.getElementById('blade-helpers')?.dataset.hasErrors === '1';
-    if (__hasErrors) {
-        openLogin();
-    }
-});
-
-function registerSuccess() {
-    // simulasi register berhasil
-    closeAuth(); // tutup semua modal
-    openLogin(); // buka popup login
-}
-
-// 9. Event Listener untuk klik Overlay (Klik luar modal = tutup)
-overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) {
-        closeAuth();
-    }
-});
-
-// 10. Cek URL Parameter (Opsional, untuk auto open register)
-document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('register') === '1') {
-        openRegister();
-    }
-
-    const regErr = document.getElementById('blade-helpers')?.dataset.registerErrors === '1';
-    if (regErr) {
-        openRegister();
-    }
-});
-
-/* ===============================
-   GUEST NAVBAR INTERCEPT
-=============================== */
-document.addEventListener('DOMContentLoaded', () => {
-    const guestLinks = document.querySelectorAll('[data-auth]');
-
-    guestLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
+        nextBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            openLogin();
+            container.scrollLeft += scrollAmount;
         });
-    });
-});
+
+        prevBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            container.scrollLeft -= scrollAmount;
+        });
+    }
 </script>
-
-@endguest
-
-@endsection
+@endpush

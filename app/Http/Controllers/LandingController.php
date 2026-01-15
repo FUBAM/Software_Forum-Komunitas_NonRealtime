@@ -30,7 +30,7 @@ class LandingController extends Controller
         $events = Events::where('type', 'lomba')
             ->where('status', 'published')
             ->orderByDesc('created_at')
-            ->limit(5)
+            ->limit(10  )
             ->get();
 
         /*

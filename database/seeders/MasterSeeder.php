@@ -54,9 +54,9 @@ class MasterSeeder extends Seeder
         // ]);
 
         // User::factory(10)->create();
-        // Berita::factory()->count(20)->create();  
+        Berita::factory()->count(20)->create();  
         // Komunitas::factory()->count(20)->create();
-        Events::factory()->count(20)->create();
+        // Events::factory()->count(20)->create();
 
         // $kategori = [
         //     [

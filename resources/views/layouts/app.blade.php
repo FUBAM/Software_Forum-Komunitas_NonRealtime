@@ -46,12 +46,16 @@
             z-index: 9999; /* Di atas overlay */
             width: 90%;
             max-width: 400px;
+            opacity: 0;
+            transition: all 0.3s ease;
         }
         
         /* Class helper untuk menampilkan */
         .auth-modal.active {
             display: block !important; /* Paksa Tampil */
             animation: fadeIn 0.3s ease;
+            opacity: 1;
+            transform: translate(-50%, -50%);
         }
 
         /* Hilangkan class hidden bawaan jika ada bentrok */
@@ -83,87 +87,151 @@
         @include('auth.login-form')
         @include('auth.register-form')
         @include('auth.forgot-form')
-    @endguest
+        @endguest
 
-    {{-- 🔥 JAVASCRIPT LOGIC 🔥 --}}
     <script>
-        // Fungsi Debugging
-        function openLogin() {
-            console.log('Tombol Masuk Diklik!'); 
-            
-            const modal = document.getElementById('loginModal');
-            const overlay = document.getElementById('authOverlay');
-            
-            // Tutup Register jika terbuka
-            document.getElementById('registerModal')?.classList.remove('active');
-            document.getElementById('registerModal')?.classList.add('hidden');
-
-            if (modal && overlay) {
-                modal.classList.remove('hidden'); 
-                modal.classList.add('active');    
-                overlay.classList.add('active');
-            } else {
-                // SAYA HAPUS TANDA @ DI SINI AGAR TIDAK ERROR
-                console.error('Elemen Modal tidak ditemukan! Pastikan file auth sudah di-include.');
-            }
-        }
-
-        function openRegister() {
-            console.log('Tombol Daftar Diklik!');
-
-            const modal = document.getElementById('registerModal');
-            const overlay = document.getElementById('authOverlay');
-            const forgotModal = document.getElementById('forgotModal');
-
-            // Tutup Login jika terbuka
-            document.getElementById('loginModal')?.classList.remove('active');
-            document.getElementById('loginModal')?.classList.add('hidden');
-
-            if (modal && overlay) {
-                modal.classList.remove('hidden');
-                modal.classList.add('active');
-                overlay.classList.add('active');
-            }
-        }
-
-        function closeAuth() {
-            console.log('Menutup Modal...');
+        // --- 1. FUNGSI PEMBERSIH (Mencegah Background Nyangkut) ---
+        function resetAuthUI() {
             const overlay = document.getElementById('authOverlay');
             const modals = document.querySelectorAll('.auth-modal');
 
             if (overlay) overlay.classList.remove('active');
-            modals.forEach(m => {
-                m.classList.remove('active');
-                m.classList.add('hidden');
+            
+            modals.forEach(modal => {
+                modal.classList.remove('active');
+                modal.style.display = ''; // Hapus style inline jika ada
             });
         }
-        
-        // Fungsi Switch (Ganti antar modal)
-        function switchToRegister() {
-            closeAuth();
-            setTimeout(openRegister, 100);
-        }
-        function switchToLogin() {
-            closeAuth();
-            setTimeout(openLogin, 100);
+
+        // --- 2. BUKA LOGIN ---
+        function openLogin() {
+            resetAuthUI(); // Bersihkan layar dulu
+            
+            const modal = document.getElementById('loginModal');
+            const overlay = document.getElementById('authOverlay');
+
+            if (modal && overlay) {
+                setTimeout(() => {
+                    overlay.classList.add('active');
+                    modal.classList.add('active');
+                }, 10);
+            }
         }
 
+        // --- 3. BUKA REGISTER ---
+        function openRegister() {
+            resetAuthUI(); 
+
+            const modal = document.getElementById('registerModal');
+            const overlay = document.getElementById('authOverlay');
+
+            if (modal && overlay) {
+                setTimeout(() => {
+                    overlay.classList.add('active');
+                    modal.classList.add('active');
+                }, 10);
+            }
+        }
+
+        // --- 4. BUKA LUPA PASSWORD ---
         function openForgot() {
-            // Jangan clear server-rendered messages saat membuka forgot
-            loginModal.style.display = 'none';
-            registerModal.style.display = 'none';
-            overlay.style.display = 'block';
-            forgotModal.style.display = 'block';
+            resetAuthUI(); 
+
+            const modal = document.getElementById('forgotModal');
+            const overlay = document.getElementById('authOverlay');
+
+            if (modal && overlay) {
+                setTimeout(() => {
+                    overlay.classList.add('active');
+                    modal.classList.add('active');
+                }, 10);
+            }
         }
 
-        // 8. Fungsi Reset Password Action
-        function goToResetPage() {
-            // Redirect ke Route Laravel 'reset-password'
-            window.location.href = "{{ url('/reset-password') }}";
+        // --- 5. TUTUP SEMUA ---
+        function closeAuth() {
+            resetAuthUI();
         }
+
+        // --- 6. PINDAH-PINDAH POPUP ---
+        function switchToRegister() {
+            openRegister(); // Karena sudah ada resetAuthUI di dalamnya, aman.
+        }
+
+        function switchToLogin() {
+            openLogin();
+        }
+        
+        // --- 7. GLOBAL LISTENER ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tangkap klik dari Header/Footer (data-auth)
+            const guestLinks = document.querySelectorAll('[data-auth]');
+            guestLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openLogin();
+                });
+            });
+        });
+
+    function goToResetPage() {
+        // Cari input text pertama di dalam modal forgot
+        // (Asumsi input username/email adalah input pertama)
+        const input = document.querySelector('#forgotModal input[type="text"]');
+        
+        if (input && input.value.trim() === "") {
+            alert("Silakan masukkan Email atau Username terlebih dahulu!");
+            return; // Batalkan pindah halaman
+        }
+
+        // Jika ada isinya, baru pindah
+        window.location.href = "{{ url('/reset-password') }}";
+    }
     </script>
 
     @stack('scripts')
+
+    <div id="blade-helpers" 
+        data-register-errors="{{ $errors->hasAny(['username', 'email', 'password', 'terms']) ? '1' : '0' }}"
+        style="display: none;">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const helpers = document.getElementById('blade-helpers');
+            
+            // Cek jika ada error khusus register, buka popup register
+            if (helpers && helpers.dataset.registerErrors === '1') {
+                openRegister();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const termsCheck = document.getElementById('terms-check');
+            const btnRegister = document.getElementById('btn-register');
+
+            if (termsCheck && btnRegister) {
+                // Fungsi untuk update status tombol
+                function toggleRegisterButton() {
+                    if (termsCheck.checked) {
+                        btnRegister.disabled = false;
+                        btnRegister.style.opacity = '1';
+                        btnRegister.style.cursor = 'pointer';
+                    } else {
+                        btnRegister.disabled = true;
+                        btnRegister.style.opacity = '0.5';
+                        btnRegister.style.cursor = 'not-allowed';
+                    }
+                }
+
+                // Cek saat pertama kali load (untuk old input)
+                toggleRegisterButton();
+
+                // Cek setiap kali diklik
+                termsCheck.addEventListener('change', toggleRegisterButton);
+            }
+        });
+    </script>
 
 </body>
 </html>

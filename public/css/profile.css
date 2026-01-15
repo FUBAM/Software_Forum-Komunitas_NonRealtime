@@ -166,6 +166,9 @@ body {
 /* ================= TOMBOL EDIT PROFIL (REVISI) ================= */
 
 .btn-edit {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
     background: #ffffff; /* Background Putih */
     border: 2px solid #000; /* Garis Tepi Hitam (sesuai gambar) */
     color: #000000; /* Tulisan Hitam (sesuai gambar) */
@@ -256,6 +259,36 @@ body {
 .activity-grid img:hover {
     transform: scale(1.05);
 }
+
+.activity-empty {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    opacity: 0.6;
+    padding: 20px;
+}
+
+.activity-item {
+    text-align: center;
+}
+
+.activity-item img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.profile-header-own,
+.profile-info-own,
+.profile-avatar-section {
+    pointer-events: auto;
+}
+
+.profile-header-own::before,
+.profile-header-own::after {
+    pointer-events: none;
+}
+
 
 /* ================= TAMPILAN 2: EDIT PROFILE ================= */
 .section-title {
