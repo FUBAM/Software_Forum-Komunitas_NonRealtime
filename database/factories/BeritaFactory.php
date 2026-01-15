@@ -22,6 +22,7 @@ class BeritaFactory extends Factory
             'konten' => $this->faker->paragraphs(3, true),
             'gambar_url' => 'image/berita/berita-default.jpg',
             'user_id' => 1,
+            'status' => 'published',
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }

@@ -25,7 +25,7 @@ class AdminSeeder extends Seeder
 
         // Create admin (idempotent because we check existence above)
         User::create([
-            'nama' => 'Admin Pusat',
+            'nama' => 'admin',
             'email' => $email,
             'password' => Hash::make('admin123'),
             'role' => 'admin',
@@ -36,5 +36,7 @@ class AdminSeeder extends Seeder
         ]);
 
         $this->command->info("Created admin user: {$email} (password: admin123)");
+
+        User::factory(10)->create();
     }
 }

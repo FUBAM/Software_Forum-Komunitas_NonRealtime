@@ -20,10 +20,7 @@ class MasterSeeder extends Seeder
     public function run(): void
     {
         // 1. ISI DATA KOTA
-        // $daftar_kota = ['Sleman', 'Bantul', 'Yogyakarta', 'Kulon Progo', 'Gunung Kidul'];
-        // foreach ($daftar_kota as $k) {
-        //     kota::create(['nama' => $k]);
-        // }
+        
 
         // // 3. ISI DATA BADGE (LENCANA)
         // badge::create([
@@ -53,93 +50,9 @@ class MasterSeeder extends Seeder
         //     'terpercaya' => true,
         // ]);
 
-        // User::factory(10)->create();
-        Berita::factory()->count(20)->create();  
-        // Komunitas::factory()->count(20)->create();
-        // Events::factory()->count(20)->create();
-
-        // $kategori = [
-        //     [
-        //         'nama' => 'Literasi & Penulisan',
-        //         'icon_url' => 'image/icon/literasi.png', // Sesuaikan path icon Anda
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Seni & Desain',
-        //         'icon_url' => 'image/icon/seni.png',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Teknologi & Coding',
-        //         'icon_url' => 'image/icon/teknologi.png',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Gaming & E-Sports',
-        //         'icon_url' => 'image/icon/gaming.png',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Kesehatan Mental',
-        //         'icon_url' => 'image/icon/kesehatan.png',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Gaya Hidup Solo',
-        //         'icon_url' => 'image/icon/solo.png',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Akademik & Sains',
-        //         'icon_url' => 'image/icon/akademik.png',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Pop Culture',
-        //         'icon_url' => 'image/icon/popculture.png',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        // ];
-
-        // DB::table('kategori')->insert($kategori);
-
-        // $kota = [
-        //     [
-        //         'nama' => 'Kota Yogyakarta',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Kabupaten Sleman',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Kabupaten Bantul',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Kabupaten Kulon Progo',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'nama' => 'Kabupaten Gunungkidul',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        // ];
-
-        // DB::table('kota')->insert($kota);
+        // 
+        // 
+        // 
 
     }
 }

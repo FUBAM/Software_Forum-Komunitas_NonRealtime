@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Events;
 use App\Models\Kategori;
 use App\Models\Komunitas;
+use App\Models\Kota;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,12 +22,14 @@ class EventsFactory extends Factory
         // 2. Ambil ID relasi (Fallback ke null atau 1 jika tabel kosong untuk mencegah error)
         $kategori = Kategori::inRandomOrder()->first();
         $komunitas = Komunitas::inRandomOrder()->first();
+        $kota = Kota::inRandomOrder()->first();
         $user = User::inRandomOrder()->first(); // User pengusul
 
         return [
             // Relasi
             'kategori_id' => $kategori ? $kategori->id : 1, // Pastikan tabel kategori di-seed duluan
             'komunitas_id' => $this->faker->boolean(70) ? ($komunitas ? $komunitas->id : null) : null, // 70% event terikat komunitas, 30% umum (null)
+            'kota_id' => $this->faker->boolean(80) ? ($kota ? $kota->id : null) : null, // 80% event punya kota, 20% null
             'diusulkan_oleh' => $user ? $user->id : 1, // Default ke user ID 1
 
             // Data Event
