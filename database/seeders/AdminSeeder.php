@@ -38,8 +38,7 @@ class AdminSeeder extends Seeder
 
         $this->command->info("Created admin user: {$email} (password: admin123)");
 
-        User::factory(10)->create();
-
+        
         $user1 = [
             // 1. Peserta di Event 21 (Yang sudah selesai)
             // Asumsi: Karena event selesai, statusnya mungkin sudah 'hadir'
@@ -52,9 +51,25 @@ class AdminSeeder extends Seeder
                 'level_terkini' => 6,
                 'skor_kepercayaan' => 99,
                 'terpercaya' => true,
-            ],
-        ];
-
-        DB::table('users')->insertOrIgnore($user1);
+                ],
+                ];
+                
+                DB::table('users')->insertOrIgnore($user1);
+                
+                $user3 = [
+                    [
+                        'nama' => 'user3',
+                'email' => 'user@stiga.id',
+                'password' => Hash::make('usertiga'),
+                'role' => 'member',
+                'xp_terkini' => 999,
+                'level_terkini' => 9,
+                'skor_kepercayaan' => 99,
+                'terpercaya' => true,
+                ],
+                ];
+                DB::table('users')->insertOrIgnore($user3);
+                
+                User::factory(10)->create();
     }
 }

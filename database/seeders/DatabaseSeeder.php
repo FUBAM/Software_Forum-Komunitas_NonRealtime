@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             EventsSeeder::class,
             PesertaSeeder::class,
             GrupSeeder::class,
-            PesanGrupSeeder::class,
             LaporanSeeder::class,
         ]);
     }

@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Events;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Pembayaran extends Model
 {
+    use HasFactory;
+
     protected $table = 'pembayaran';
 
     protected $fillable = [
@@ -31,11 +34,17 @@ class Pembayaran extends Model
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * User yang melakukan pembayaran
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Event yang dibayar
+     */
     public function event(): BelongsTo
     {
         return $this->belongsTo(Events::class, 'events_id');

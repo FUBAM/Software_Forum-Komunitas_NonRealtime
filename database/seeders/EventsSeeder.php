@@ -2,12 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\Events;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Events;
+use App\Models\Kategori;
+use App\Models\Komunitas;
+use App\Models\Kota;
+use App\Models\User;
 use Carbon\Carbon;
-
+use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class EventsSeeder extends Seeder
 {
@@ -16,7 +19,6 @@ class EventsSeeder extends Seeder
      */
     public function run(): void
     {
-        Events::factory()->count(20)->create();
         
         // Pastikan User ID 1 (Admin/Pengusul) dan Kategori ID 1 ada di database Anda
         // Jika tidak, ganti angkanya dengan ID yang valid.
@@ -76,5 +78,49 @@ class EventsSeeder extends Seeder
 
         // Gunakan insertOrIgnore agar tidak error jika ID sudah ada
         DB::table('events')->insertOrIgnore($events);
+
+        $faker = Faker::create('id_ID');
+
+        // Mengambil ID referensi yang sudah ada di database
+        $kategoriIds = Kategori::pluck('id')->toArray();
+        $komunitasIds = Komunitas::pluck('id')->toArray();
+        $kotaIds = Kota::pluck('id')->toArray();
+        $userIds = User::pluck('id')->toArray();
+
+        // Daftar judul lomba agar data lebih bervariasi dan realistis
+        $daftarJudul = [
+            'UI/UX Design National Competition', 'Web Development Warrior 2026', 
+            'Hackathon DIY Digital Talent', 'Lomba Keamanan Siber Regional',
+            'Business Plan Challenge UTY', 'IOT Innovation Summit Lomba',
+            'Mobile App Creative Contest', 'Data Science Hackfest Jogja',
+            'Lomba Karya Tulis Ilmiah IT', 'Game Development DIY Cup',
+            'Algoritma & Pemrograman Contest', 'Sleman Robotics Competition',
+            'Database Design Championship', 'Cloud Architecture Challenge',
+            'Digital Marketing Strategy Race', 'E-Sports Coding League',
+            'Artificial Intelligence Expo Lomba', 'Tech Startup Pitching Day',
+            'Lomba Jaringan & Infrastruktur', 'Software Engineering Excellence'
+        ];
+
+        for ($i = 0; $i < 20; $i++) {
+            $isBerbayar = $faker->boolean(50); // 50% kemungkinan berbayar
+            $harga = $isBerbayar ? $faker->randomElement([50000, 75000, 100000, 150000]) : 0;
+
+            Events::create([
+                'kategori_id'    => $faker->randomElement($kategoriIds),
+                'komunitas_id'   => $faker->randomElement($komunitasIds),
+                'kota_id'        => $faker->randomElement($kotaIds),
+                'diusulkan_oleh' => $faker->randomElement($userIds),
+                'type'           => 'lomba',
+                'judul'          => $daftarJudul[$i],
+                'deskripsi'      => $faker->paragraph(3),
+                'berbayar'       => $isBerbayar,
+                'harga'          => $harga,
+                'poster_url'     => 'events/lomba-' . ($i + 1) . '.jpg',
+                'status'         => 'published',
+                'start_date'     => Carbon::now()->addDays($faker->numberBetween(7, 60)), // Dimulai 7-60 hari ke depan
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ]);
+        }
     }
 }

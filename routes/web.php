@@ -1,9 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LandingController;
@@ -15,174 +12,111 @@ use App\Http\Controllers\PesanGrupController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\LaporanController;
 
-use App\Models\User;
-
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/home', [LandingController::class, 'index'])->name('home');
 Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.detail');
 
 /*
 |--------------------------------------------------------------------------
-| AUTH
+| AUTH ROUTES
 |--------------------------------------------------------------------------
 */
-
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| DASHBOARD
+| MEMBER ROUTES (AUTHENTICATED)
 |--------------------------------------------------------------------------
 */
-
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware('auth')
-    ->name('dashboard');
-
-/*
-|--------------------------------------------------------------------------
-| KOMUNITAS
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware('auth')->group(function () {
 
+    // Dashboard Auto-Redirect
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Komunitas
     Route::get('/komunitas', [KomunitasController::class, 'index'])->name('komunitas.index');
     Route::get('/komunitas/{id}', [KomunitasController::class, 'show'])->name('komunitas.show');
     Route::post('/komunitas/join', [KomunitasController::class, 'join'])->name('komunitas.join');
     Route::get('/komunitas-saya', [KomunitasController::class, 'myCommunities'])->name('komunitas.my');
     Route::get('/komunitas/{id}/events', [KomunitasController::class, 'events'])->name('komunitas.events');
 
-});
-
-/*
-|--------------------------------------------------------------------------
-| EVENTS
-|--------------------------------------------------------------------------
-*/
-Route::middleware('auth')->group(function () {
-
+    // Events & XP
     Route::get('/events', [EventsController::class, 'index'])->name('events.index');
     Route::get('/events/riwayat', [EventsController::class, 'riwayat'])->name('events.riwayat');
     Route::get('/events/{id}', [EventsController::class, 'show'])->name('events.show');
-    Route::post('/events/{id}/klaim', [EventsController::class, 'klaimXP'])->name('events.klaim');
-
-    // 🔥 TAMBAHAN BARU: Route Form Pendaftaran & Proses Daftar 🔥
     Route::get('/events/{id}/daftar', [EventsController::class, 'showRegisterForm'])->name('events.register');
     Route::post('/events/{id}/daftar', [EventsController::class, 'storeRegistration'])->name('events.storeRegistration');
+    Route::post('/events/{id}/klaim', [EventsController::class, 'klaimXP'])->name('events.klaim');
 
-});
-
-/*
-|--------------------------------------------------------------------------
-| PEMBAYARAN
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware('auth')->group(function () {
-
+    // Pembayaran
     Route::get('/events/{id}/bayar', [PembayaranController::class, 'create'])->name('pembayaran.create');
     Route::post('/events/{id}/bayar', [PembayaranController::class, 'store'])->name('pembayaran.store');
 
-});
-
-/*
-|--------------------------------------------------------------------------
-| CHAT (NON REALTIME)
-|--------------------------------------------------------------------------
-*/
-
-Route::middleware('auth')->group(function () {
-
+    // Chat (Non-Realtime)
     Route::get('/grup/{id}/chat', [PesanGrupController::class, 'chat'])->name('grup.chat');
     Route::post('/grup/{id}/chat', [PesanGrupController::class, 'sendMessage'])->name('grup.chat.send');
 
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN
+| ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
 
-Route::middleware('auth')->group(function () {
+    // 1. Dashboard Utama
+    Route::get('/dashboard', [DashboardController::class, 'adminIndex'])->name('dashboard');
 
-    Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])
-        ->name('admin.dashboard');
+    // 2. Manajemen Pembayaran
+    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran');
+    Route::post('/pembayaran/{id}/verifikasi', [PembayaranController::class, 'verify'])->name('pembayaran.verify');
 
-    // Pembayaran
-    Route::post('/admin/pembayaran/{id}/verifikasi', [PembayaranController::class, 'verify'])
-        ->name('admin.pembayaran.verify');
+    // 3. Manajemen Lomba (EventsController)
+    Route::get('/lomba', [EventsController::class, 'adminIndex'])->name('lomba');
+    Route::post('/lomba/store', [EventsController::class, 'store'])->name('lomba.store');
+    Route::get('/kelola-lomba/{id}', [EventsController::class, 'adminShow'])->name('lomba.show');
+    Route::post('/kelola-lomba/{id}/update', [EventsController::class, 'adminUpdate'])->name('lomba.update');
+    Route::post('/kelola-lomba/{id}/finish', [EventsController::class, 'adminFinish'])->name('lomba.finish');
 
-    // Berita
-    Route::resource('/admin/berita', BeritaController::class);
+    // 4. Manajemen Komunitas
+    Route::get('/komunitas', [KomunitasController::class, 'adminList'])->name('komunitas');
+    Route::post('/komunitas/store', [KomunitasController::class, 'store'])->name('komunitas.store');
 
+    // 5. Manajemen Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan'); // <-- Ubah jadi 'laporan' saja
+    Route::post('/laporan/{id}/resolve', [LaporanController::class, 'resolve'])->name('laporan.resolve');
 
-    // Laporan
-    Route::get('/admin/laporan', [LaporanController::class, 'index'])
-        ->name('admin.laporan.index');
-    Route::post('/admin/laporan/{id}/resolve', [LaporanController::class, 'resolve'])
-        ->name('admin.laporan.resolve');
-
+    // 6. Manajemen Berita
+    Route::get('/berita', [BeritaController::class, 'index'])->name('berita');
+    Route::resource('berita', BeritaController::class)->except(['index']);
 });
 
 /*
 |--------------------------------------------------------------------------
-| PROFILE (PUBLIC)
+| MODERATOR ROUTES
 |--------------------------------------------------------------------------
 */
-
-
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-
-// Route::get('/profile', function (Request $request) {
-//     $viewedUser = null;
-
-//     if ($slug = $request->query('user')) {
-//         $slug = Str::slug($slug);
-//         $viewedUser = User::all()->firstWhere(
-//             fn ($u) => Str::slug($u->nama) === $slug
-//         );
-//     }
-
-//     return view('profile', compact('viewedUser'));
-// });
+Route::middleware(['auth'])->prefix('moderator/komunitas/{id}')->name('moderator.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'moderatorIndex'])->name('index'); 
+    Route::get('/chat', [DashboardController::class, 'moderatorChat'])->name('chat');
+    Route::get('/events', [DashboardController::class, 'moderatorEvents'])->name('events');
+});
 
 /*
 |--------------------------------------------------------------------------
 | STATIC PAGES
 |--------------------------------------------------------------------------
 */
-
 Route::view('/tentang_kami', 'tentang_kami');
 Route::view('/reset-password', 'reset-password');
-
-/*
-|--------------------------------------------------------------------------
-| MODERATOR ROUTES (MENGGUNAKAN DASHBOARD CONTROLLER)
-|--------------------------------------------------------------------------
-*/
-
-// Grouping route tetap sama agar tidak perlu ubah view blade
-Route::middleware(['auth'])->prefix('moderator/komunitas/{id}')->name('moderator.')->group(function () {
-    
-    // Dashboard Utama Moderator
-    Route::get('/dashboard', [DashboardController::class, 'moderatorIndex'])->name('index'); 
-    
-    // Chat Moderator (Sekarang pakai DashboardController)
-    Route::get('/chat', [DashboardController::class, 'moderatorChat'])->name('chat');
-    
-    // Events Moderator (Sekarang pakai DashboardController)
-    Route::get('/events', [DashboardController::class, 'moderatorEvents'])->name('events');
-
-});

@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property-read string $jenis
  * @property-read bool $is_berbayar
  * @property-read string|null $poster
+ * @property-read string $url
+ * @property-read string $harga_label
+ * @property-read string $tanggal
  */
 class Events extends Model
 {
@@ -43,31 +46,60 @@ class Events extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | ACCESSORS (ADAPTER UNTUK BLADE & CONTROLLER)
+    | ACCESSORS (GABUNGAN: ADAPTER & TAMPILAN BLADE)
     |--------------------------------------------------------------------------
     */
 
-    // Untuk Blade: $event->jenis
-    public function getJenisAttribute(): string
+    // Dari Events.php asli: Untuk logika internal
+    public function getJenisAttribute(): string { return $this->type; }
+    public function getIsBerbayarAttribute(): bool { return (bool) $this->berbayar; }
+    public function getPosterAttribute(): ?string { return $this->poster_url; }
+
+    // Dari Events_Teman.php: Untuk mempercantik tampilan Blade
+    
+    // Mengambil URL Poster (Jika null pakai default placeholder)
+    public function getUrlAttribute()
     {
-        return $this->type;
+        return $this->poster_url ? asset('storage/' . $this->poster_url) : 'https://via.placeholder.com/400x200?text=No+Poster';
     }
 
-    // Untuk Blade: $event->is_berbayar
-    public function getIsBerbayarAttribute(): bool
+    // Mengambil Nama Kategori
+    public function getKategoriLabelAttribute()
     {
-        return (bool) $this->berbayar;
+        return $this->kategori->nama ?? 'Umum';
     }
 
-    // Untuk Blade: $event->poster
-    public function getPosterAttribute(): ?string
+    // Icon Kategori berdasarkan nama (FontAwesome)
+    public function getIconKategoriAttribute()
     {
-        return $this->poster_url;
+        $kat = strtolower($this->kategori_label);
+        if (str_contains($kat, 'tech') || str_contains($kat, 'code')) return 'fa-code';
+        if (str_contains($kat, 'art') || str_contains($kat, 'desain')) return 'fa-palette';
+        if (str_contains($kat, 'sport')) return 'fa-person-running';
+        return 'fa-trophy';
+    }   
+
+    // Lokasi Singkat
+    public function getLokasiSingkatAttribute()
+    {
+        return $this->kota->nama ?? 'Online';
+    }
+
+    // Format Tanggal Indonesia (Contoh: 15 Desember 2025)
+    public function getTanggalAttribute()
+    {
+        return $this->start_date ? $this->start_date->translatedFormat('d F Y') : '-';
+    }
+
+    // Format Harga Rupiah (Contoh: Rp 50.000 atau Gratis)
+    public function getHargaLabelAttribute()
+    {
+        return $this->harga > 0 ? 'Rp ' . number_format($this->harga, 0, ',', '.') : 'Gratis';
     }
 
     /*
     |--------------------------------------------------------------------------
-    | RELATIONS (ENGLISH)
+    | RELATIONS (MENGGUNAKAN STRUKTUR ASLI ANDA)
     |--------------------------------------------------------------------------
     */
 
@@ -93,35 +125,15 @@ class Events extends Model
 
     public function participants()
     {
-        return $this->belongsToMany(
-            User::class,
-            'peserta_kegiatan',
-            'events_id',
-            'user_id'
-        )
-        ->using(PesertaKegiatan::class)
-        ->withPivot('status', 'bukti_url', 'review_text')
-        ->withTimestamps();
+        // Tetap menggunakan 'using' PesertaKegiatan agar fitur review & XP tidak rusak
+        return $this->belongsToMany(User::class, 'peserta_kegiatan', 'events_id', 'user_id')
+            ->using(PesertaKegiatan::class)
+            ->withPivot('status', 'bukti_url', 'review_text')
+            ->withTimestamps();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONS (INDONESIAN ALIAS)
-    |--------------------------------------------------------------------------
-    */
-
-    public function pengusul()
-    {
-        return $this->proposer();
-    }
-
-    public function komunitas()
-    {
-        return $this->community();
-    }
-
-    public function kategori()
-    {
-        return $this->category();
-    }
+    /* ALIAS UNTUK KOMPATIBILITAS ACCESSOR TEMAN */
+    public function pengusul() { return $this->proposer(); }
+    public function komunitas() { return $this->community(); }
+    public function kategori() { return $this->category(); }
 }

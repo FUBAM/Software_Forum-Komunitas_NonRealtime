@@ -3,49 +3,36 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Komunitas;
+use App\Models\Grup;
 
 class GrupSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        // 1. Ambil semua ID dari tabel komunitas
-        // Pastikan Anda sudah melakukan seeding untuk tabel komunitas sebelumnya
-        $komunitasIds = DB::table('komunitas')->pluck('id');
+        // Mengambil semua komunitas yang sudah ada
+        $komunitas = Komunitas::all();
 
-        if ($komunitasIds->isEmpty()) {
-            $this->command->warn('Tidak ada data Komunitas. Harap seed tabel komunitas terlebih dahulu.');
-            return;
-        }
-
-        $dataGrup = [];
-
-        foreach ($komunitasIds as $id) {
-            // A. Grup Obrolan Umum (Tipe Chat, Semua member bisa kirim pesan)
-            $dataGrup[] = [
-                'komunitas_id' => $id,
-                'nama'         => 'Obrolan Umum',
+        foreach ($komunitas as $kom) {
+            // 1. Buat Grup Chat untuk setiap komunitas
+            Grup::create([
+                'komunitas_id' => $kom->id,
+                'nama'         => 'Diskusi ' . $kom->nama,
                 'type'         => 'chat',
-                'is_read_only' => false, // Member bisa chat
+                'is_read_only' => false,
                 'created_at'   => now(),
                 'updated_at'   => now(),
-            ];
+            ]);
 
-            // B. Grup Info Event (Tipe Events, Hanya Admin/ReadOnly)
-            $dataGrup[] = [
-                'komunitas_id' => $id,
-                'nama'         => 'Info Event & Lomba',
+            // 2. Buat Grup Events/Pengumuman untuk setiap komunitas
+            Grup::create([
+                'komunitas_id' => $kom->id,
+                'nama'         => 'Info Event ' . $kom->nama,
                 'type'         => 'events',
-                'is_read_only' => true, // Hanya admin yang bisa post (biasanya)
+                'is_read_only' => true, // Biasanya grup event bersifat satu arah (read-only)
                 'created_at'   => now(),
                 'updated_at'   => now(),
-            ];
+            ]);
         }
-
-        // Masukkan data ke database
-        DB::table('grup')->insert($dataGrup);
     }
 }

@@ -13,15 +13,45 @@ class PembayaranController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
+    | HALAMAN ADMIN: LIST PEMBAYARAN
+    |--------------------------------------------------------------------------
+    */
+    public function index()
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'admin') abort(403);
+
+        // Sorting: Status 'pending' muncul paling atas, sisanya urut tanggal terbaru
+        $payments = Pembayaran::with(['user', 'event'])
+            ->orderByRaw("FIELD(status, 'pending') DESC")
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Fitur Notifikasi untuk Admin
+        $pendingCount = $payments->where('status', 'pending')->count();
+        $notifications = [];
+        if ($pendingCount > 0) {
+            $notifications[] = (object)[
+                'title' => 'Verifikasi Tertunda',
+                'desc' => "Ada $pendingCount pembayaran menunggu konfirmasi.",
+                'time' => 'Hari ini',
+                'is_unread' => true,
+                'color' => 'orange',
+                'icon' => 'fa-regular fa-clock'
+            ];
+        }
+
+        return view('admin.pembayaran', compact('payments', 'notifications'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | FORM PEMBAYARAN (MEMBER)
     |--------------------------------------------------------------------------
     */
-
     public function create($eventId)
     {
-        if (!Auth::check()) {
-            return redirect('/?login=1');
-        }
+        if (!Auth::check()) return redirect('/?login=1');
 
         $event = Events::where('berbayar', true)
             ->where('status', 'published')
@@ -35,19 +65,16 @@ class PembayaranController extends Controller
     | SIMPAN BUKTI PEMBAYARAN (MEMBER)
     |--------------------------------------------------------------------------
     */
-
     public function store(Request $request, $eventId)
     {
-        if (!Auth::check()) {
-            return redirect('/?login=1');
-        }
+        if (!Auth::check()) return redirect('/?login=1');
 
         $request->validate([
             'bukti_transfer' => 'required|image|max:2048',
             'jumlah_bayar'   => 'required|numeric|min:0',
         ]);
 
-        // Cegah pembayaran ganda
+        // 🔥 FITUR KEAMANAN: Cegah pembayaran ganda untuk event yang sama
         $exists = Pembayaran::where('user_id', Auth::id())
             ->where('events_id', $eventId)
             ->whereIn('status', ['pending', 'lunas'])
@@ -57,8 +84,7 @@ class PembayaranController extends Controller
             return back()->with('error', 'Anda sudah mengirim pembayaran untuk event ini.');
         }
 
-        $path = $request->file('bukti_transfer')
-            ->store('bukti_bayar', 'public');
+        $path = $request->file('bukti_transfer')->store('bukti_bayar', 'public');
 
         Pembayaran::create([
             'user_id'       => Auth::id(),
@@ -75,49 +101,46 @@ class PembayaranController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | VERIFIKASI PEMBAYARAN (ADMIN)
+    | VERIFIKASI PEMBAYARAN (ADMIN: APPROVE & REJECT)
     |--------------------------------------------------------------------------
     */
-
     public function verify(Request $request, $id)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'admin') {
-            abort(403);
-        }
+        if (!$user || $user->role !== 'admin') abort(403);
 
         $pembayaran = Pembayaran::findOrFail($id);
 
-        // Cegah verifikasi ulang
         if ($pembayaran->status !== 'pending') {
             return back()->with('error', 'Pembayaran sudah diproses.');
         }
 
+        // 1. LOGIKA APPROVE (SETUJUI)
         if ($request->action === 'approve') {
-
             $pembayaran->update([
                 'status'            => 'lunas',
                 'diverifikasi_oleh' => $user->id,
             ]);
 
-            // Cegah duplikasi peserta
+            // Daftarkan ke tabel peserta jika belum ada
             $exists = PesertaKegiatan::where('user_id', $pembayaran->user_id)
                 ->where('events_id', $pembayaran->events_id)
                 ->exists();
 
-            if (! $exists) {
+            if (!$exists) {
+                // Gunakan status 'hadir' sesuai struktur database Anda
                 PesertaKegiatan::create([
                     'user_id'   => $pembayaran->user_id,
                     'events_id' => $pembayaran->events_id,
-                    'status'    => 'tertarik',
+                    'status'    => 'hadir',
                 ]);
             }
 
-            return back()->with('success', 'Pembayaran berhasil diverifikasi.');
+            return back()->with('success', 'Pembayaran berhasil disetujui dan peserta terdaftar.');
         }
 
+        // 2. LOGIKA REJECT (TOLAK)
         if ($request->action === 'reject') {
-
             $request->validate([
                 'alasan' => 'required|string|max:255',
             ]);
@@ -131,6 +154,6 @@ class PembayaranController extends Controller
             return back()->with('error', 'Pembayaran ditolak.');
         }
 
-        abort(400);
+        return back();
     }
 }

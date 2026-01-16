@@ -67,7 +67,7 @@
                     {{-- Bagian Gambar (Kiri) --}}
                     <div class="nc-image-wrapper">
                         @if($item->gambar_url)
-                        <img src="{{ asset('storage/' . $item->gambar_url) }}" alt="Thumbnail">
+                        <img src="{{ asset( $item->gambar_url ?? 'image/berita/berita-default.jpg') }}" alt="Thumbnail">
                         @else
                         <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image">
                         @endif
@@ -139,9 +139,10 @@
                     <div class="form-group">
                         <label>Gambar</label>
                         <div class="upload-dashed-area" onclick="document.getElementById('file-upload-new').click()">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <p class="upload-text-main">Klik untuk unggah</p>
-                            <input type="file" id="file-upload-new" name="gambar_url" style="display:none">
+                            <i class="fa-solid fa-cloud-arrow-up" id="icon-upload-new"></i>
+                            <p class="upload-text-main" id="text-upload-new">Klik untuk unggah</p>
+                            <img id="preview-new" src="" style="display:none; max-width:100%; border-radius:8px; margin-top:10px;">
+                            <input type="file" id="file-upload-new" name="gambar_url" style="display:none" onchange="previewImage(this, 'new')">
                         </div>
                     </div>
                 </div>
@@ -178,9 +179,10 @@
                     <div class="form-group">
                         <label>Ganti Gambar</label>
                         <div class="upload-dashed-area" onclick="document.getElementById('file-upload-edit').click()">
-                            <i class="fa-regular fa-image" style="color: #2563eb;"></i>
-                            <p class="upload-text-main">Upload Gambar Baru</p>
-                            <input type="file" id="file-upload-edit" name="gambar_url" style="display:none">
+                            <i class="fa-regular fa-image" id="icon-upload-edit"></i>
+                            <p class="upload-text-main" id="text-upload-edit">Upload Gambar Baru</p>
+                            <img id="preview-edit" src="" style="display:none; max-width:100%; border-radius:8px; margin-top:10px;">
+                            <input type="file" id="file-upload-edit" name="gambar_url" style="display:none" onchange="previewImage(this, 'edit')">
                         </div>
                     </div>
                 </div>
@@ -268,6 +270,32 @@
         window.onclick = function(e) {
             if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
         }
+
+        function previewImage(input, type) {
+    const preview = document.getElementById('preview-' + type);
+    const icon = document.getElementById('icon-upload-' + type);
+    const text = document.getElementById('text-upload-' + type);
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block'; // Tampilkan gambar
+            if(icon) icon.style.display = 'none'; // Sembunyikan ikon
+            if(text) text.style.display = 'none'; // Sembunyikan teks
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+    // Reset preview saat modal ditutup
+    function tutupModal(id) {
+        document.getElementById(id).style.display = 'none';
+        // Opsional: Reset form jika diperlukan
+        // document.querySelector(`#${id} form`).reset();
+    }
     </script>
 </body>
 
