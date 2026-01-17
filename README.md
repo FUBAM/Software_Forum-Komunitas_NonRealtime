@@ -163,6 +163,16 @@ Aturan kolaborasi untuk menghubungkan Blade ke Controller:
 
 ---
 
+### Berikut Kami Berikan Link Web Yang Kami Bikin:
+
+https://zhib-railway-production.up.railway.app/
+
+### Berikut Kami Berikan Link Rancangan Tampilan Desain UI/UX Website kami di Figma:
+
+https://www.figma.com/design/ciul5CXlYkTsFd0a9HAcFy/yang-ini-aja?node-id=0-1&t=ArmhcgPlAZ0eADW3-1
+
+---
+
 ## 👨‍💻 Tim Pengembang
 
 Proyek ini dikembangkan oleh mahasiswa **Sistem Informasi** sebagai bagian dari tugas kuliah:
