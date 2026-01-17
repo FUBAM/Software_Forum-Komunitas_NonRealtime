@@ -167,9 +167,17 @@ Aturan kolaborasi untuk menghubungkan Blade ke Controller:
 
 https://zhib-railway-production.up.railway.app/
 
-### Berikut Kami Berikan Link Rancangan Tampilan Desain UI/UX Website kami di Figma:
+### Berikut Kami Berikan Link Rancangan Tampilan Desain UI/UX Website Kami di Figma:
 
 https://www.figma.com/design/ciul5CXlYkTsFd0a9HAcFy/yang-ini-aja?node-id=0-1&t=ArmhcgPlAZ0eADW3-1
+
+### Berikut Kami Berikan Link ERD di Draw.io
+
+https://drive.google.com/file/d/13oeaKVfsdpJA73AsK9sGxAeBOpCJLf66/view?usp=drivesdk
+
+### Berikut Kami Berikan Link DFD di Draw.io
+
+https://drive.google.com/drive/folders/1fXLnDMBqJDQn-tt5eL_zeGAaOFWsteHL?usp=drive_link
 
 ---
 
